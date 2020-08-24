@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2020-08-19T15:43:19.828Z</updated>
+  <updated>2020-08-24T06:34:05.904Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PHP哈希函数漏洞</title>
+    <link href="https://hosch3n.github.io/2020/08/24/PHP%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0/"/>
+    <id>https://hosch3n.github.io/2020/08/24/PHP%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0/</id>
+    <published>2020-08-24T03:39:24.000Z</published>
+    <updated>2020-08-24T06:34:05.904Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="0e"><a href="#0e" class="headerlink" title="0e"></a>0e</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$a = <span class="string">&#x27;0e123&#x27;</span>;</span><br><span class="line">$b = <span class="string">&#x27;0e456&#x27;</span>;</span><br><span class="line">$a == $b;</span><br><span class="line">$a !== $b;</span><br><span class="line"></span><br><span class="line">md5(<span class="string">&#x27;QNKCDZO&#x27;</span>) == md5(<span class="string">&#x27;240610708&#x27;</span>);</span><br><span class="line">md5(<span class="string">&#x27;s878926199a&#x27;</span>) == md5(<span class="string">&#x27;s155964671a&#x27;</span>);</span><br><span class="line"></span><br><span class="line">sha1(<span class="string">&#x27;aaroZmOk&#x27;</span>) == sha1(<span class="string">&#x27;aaK1STfY&#x27;</span>);</span><br><span class="line">sha1(<span class="string">&#x27;aaO8zKZF&#x27;</span>) == sha1(<span class="string">&#x27;aa3OFF9m&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;0e251288019&#x27;</span> == hash(<span class="string">&#x27;md4&#x27;</span>, <span class="string">&#x27;0e251288019&#x27;</span>);</span><br></pre></td></tr></table></figure><h2 id="NULL"><a href="#NULL" class="headerlink" title="NULL"></a>NULL</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$a = [<span class="number">0</span>];</span><br><span class="line">$b = [<span class="number">1</span>];</span><br><span class="line">$a != $b;</span><br><span class="line"></span><br><span class="line">md5($a) === md5($b);</span><br><span class="line"></span><br><span class="line">sha1($a) === sha1($b);</span><br><span class="line"></span><br><span class="line">hash(<span class="string">&#x27;md4&#x27;</span>, $a) == hash(<span class="string">&#x27;md4&#x27;</span>, $b);</span><br></pre></td></tr></table></figure><h2 id="‘or"><a href="#‘or" class="headerlink" title="‘or"></a>‘or</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">stristr(md5(<span class="string">&#x27;ffifdyop&#x27;</span>, <span class="literal">true</span>), <span class="string">&quot;&#x27;or&#x27;&quot;</span>);</span><br><span class="line">stristr(md5(<span class="string">&#x27;129581926211651571912466741651878684928&#x27;</span>, <span class="literal">true</span>), <span class="string">&quot;&#x27;or&#x27;&quot;</span>);</span><br></pre></td></tr></table></figure><h2 id="float"><a href="#float" class="headerlink" title="float"></a>float</h2><p>浮点值运算存在精度问题，反序列化时会出现值不等但运算后哈希相同。</p><h2 id="collision"><a href="#collision" class="headerlink" title="collision"></a>collision</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$a = <span class="string">&#x27;d131dd02c5e6eec4693d9a0698aff95c2fcab50712467eab4004583eb8fb7f8955ad340609f4b30283e4888325f1415a085125e8f7cdc99fd91dbd7280373c5bd8823e3156348f5bae6dacd436c919c6dd53e23487da03fd02396306d248cda0e99f33420f577ee8ce54b67080280d1ec69821bcb6a8839396f965ab6ff72a70 &#x27;</span>;</span><br><span class="line">$b = <span class="string">&#x27;d131dd02c5e6eec4693d9a0698aff95c2fcab50712467eab4004583eb8fb7f8955ad340609f4b30283e4888325f1415a085125e8f7cdc99fd91dbd7280373c5bd8823e3156348f5bae6dacd436c919c6dd53e23487da03fd02396306d248cda0e99f33420f577ee8ce54b67080280d1ec69821bcb6a8839396f965ab6ff72a70 &#x27;</span>;</span><br><span class="line"><span class="keyword">echo</span> md5($a) === md5($b);</span><br><span class="line"></span><br><span class="line">$a = <span class="string">&#x27;%25PDF-1.3%0A%25%E2%E3%CF%D3%0A%0A%0A1%200%20obj%0A%3C%3C/Width%202%200%20R/Height%203%200%20R/Type%204%200%20R/Subtype%205%200%20R/Filter%206%200%20R/ColorSpace%207%200%20R/Length%208%200%20R/BitsPerComponent%208%3E%3E%0Astream%0A%FF%D8%FF%FE%00%24SHA-1%20is%20dead%21%21%21%21%21%85/%EC%09%239u%9C9%B1%A1%C6%3CL%97%E1%FF%FE%01sF%DC%91f%B6%7E%11%8F%02%9A%B6%21%B2V%0F%F9%CAg%CC%A8%C7%F8%5B%A8Ly%03%0C%2B%3D%E2%18%F8m%B3%A9%09%01%D5%DFE%C1O%26%FE%DF%B3%DC8%E9j%C2/%E7%BDr%8F%0EE%BC%E0F%D2%3CW%0F%EB%14%13%98%BBU.%F5%A0%A8%2B%E31%FE%A4%807%B8%B5%D7%1F%0E3.%DF%93%AC5%00%EBM%DC%0D%EC%C1%A8dy%0Cx%2Cv%21V%60%DD0%97%91%D0k%D0%AF%3F%98%CD%A4%BCF%29%B1&#x27;</span>;</span><br><span class="line">$b = <span class="string">&#x27;%25PDF-1.3%0A%25%E2%E3%CF%D3%0A%0A%0A1%200%20obj%0A%3C%3C/Width%202%200%20R/Height%203%200%20R/Type%204%200%20R/Subtype%205%200%20R/Filter%206%200%20R/ColorSpace%207%200%20R/Length%208%200%20R/BitsPerComponent%208%3E%3E%0Astream%0A%FF%D8%FF%FE%00%24SHA-1%20is%20dead%21%21%21%21%21%85/%EC%09%239u%9C9%B1%A1%C6%3CL%97%E1%FF%FE%01%7FF%DC%93%A6%B6%7E%01%3B%02%9A%AA%1D%B2V%0BE%CAg%D6%88%C7%F8K%8CLy%1F%E0%2B%3D%F6%14%F8m%B1i%09%01%C5kE%C1S%0A%FE%DF%B7%608%E9rr/%E7%ADr%8F%0EI%04%E0F%C20W%0F%E9%D4%13%98%AB%E1.%F5%BC%94%2B%E35B%A4%80-%98%B5%D7%0F%2A3.%C3%7F%AC5%14%E7M%DC%0F%2C%C1%A8t%CD%0Cx0Z%21Vda0%97%89%60k%D0%BF%3F%98%CD%A8%04F%29%A1&#x27;</span>;</span><br><span class="line">sha1(urldecode($a)) === sha1(urldecode($b));</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;0e&quot;&gt;&lt;a href=&quot;#0e&quot; class=&quot;headerlink&quot; title=&quot;0e&quot;&gt;&lt;/a&gt;0e&lt;/h2&gt;&lt;figure class=&quot;highlight php&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span cl</summary>
+      
+    
+    
+    
+    <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="hash" scheme="https://hosch3n.github.io/tags/hash/"/>
+    
+    <category term="md4" scheme="https://hosch3n.github.io/tags/md4/"/>
+    
+    <category term="md5" scheme="https://hosch3n.github.io/tags/md5/"/>
+    
+    <category term="sha1" scheme="https://hosch3n.github.io/tags/sha1/"/>
+    
+  </entry>
   
   <entry>
     <title>Phar反序列化</title>
