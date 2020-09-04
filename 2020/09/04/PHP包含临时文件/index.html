@@ -13,8 +13,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
-<meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
-<link rel="canonical" href="https://hosch3n.github.io/tags/LFI/"/>
+<meta name="description" content="PHP包含临时文件"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://hosch3n.github.io/2020/09/04/PHP包含临时文件/"/>
 
 <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
@@ -45,8 +45,7 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
 </script>
 
-    <title>LFI · Blog
-  </title>
+    <title>PHP包含临时文件 - Blog</title>
   <meta name="generator" content="Hexo 5.0.2"></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -105,33 +104,39 @@
 
       <main id="main" class="main">
         <div class="content-wrapper">
-          <div id="content" class="content"><section id="archive" class="archive"><div class="archive-title tag">
-          <h2 class="archive-name">LFI</h2>
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">PHP包含临时文件
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-09-04
+        </span><span class="post-category">
+            <a href="/categories/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+            </span>
         </div>
-      <div class="collection-title">
-            <h2 class="archive-year">2020</h2>
-          </div>
-        <div class="archive-post">
-        <span class="archive-post-time">
-          09-04
-          </span>
-        <span class="archive-post-title">
-          <a href="/2020/09/04/PHP%E5%8C%85%E5%90%AB%E4%B8%B4%E6%97%B6%E6%96%87%E4%BB%B6/" class="archive-post-link">
-            PHP包含临时文件
-          </a>
-        </span>
+    </header>
+
+    <div class="post-content"><p>即使PHP后端不是处理文件上传的代码，在收到上传文件数据时同样会创建缓存文件，文件名可以在<code>$_FILES</code>变量中找到（通常为<code>/tmp/php[六个随机字符]</code>），通过phpinfo页面可以读到<code>$_FILES</code>。</p>
+<p>一般的请求等获取到phpinfo中的文件名时已经结束了，此时可控的临时文件就已经被删掉了，但由于phpinfo中<code>$_FILES[file][tmp_name]</code>比其它HTTP头先输出，因此可以在HTTP头中发送大量无用数据，读到临时文件名后立即利用文件包含执行代码，通过条件竞争抢到临时文件被删除前时间窗口。</p>
+<p><img src="/img/phpbhlswj_a.png"></p>
+
       </div>
-    <div class="archive-post">
-        <span class="archive-post-time">
-          09-04
-          </span>
-        <span class="archive-post-title">
-          <a href="/2020/09/04/PHP%E5%8C%85%E5%90%ABSession%E6%96%87%E4%BB%B6/" class="archive-post-link">
-            PHP包含Session文件
-          </a>
-        </span>
-      </div>
-    </section><nav class="pagination"></nav></div></div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/LFI/">LFI</a>
+            <a href="/tags/tmp/">tmp</a>
+            </div>
+        
+        <nav class="post-nav"><a class="next" href="/2020/09/04/PHP%E5%8C%85%E5%90%ABSession%E6%96%87%E4%BB%B6/">
+        <span class="next-text nav-default">PHP包含Session文件</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
       </main>
 
       <footer id="footer" class="footer"><div class="social-links"><a href="mailto:hosch3n@protonmail.com" class="iconfont icon-email" title="email"></a>

@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2020-09-04T09:22:41.945Z</updated>
+  <updated>2020-09-04T10:07:35.721Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -17,11 +17,37 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>PHP文件包含Session</title>
-    <link href="https://hosch3n.github.io/2020/09/04/PHP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%ABSession/"/>
-    <id>https://hosch3n.github.io/2020/09/04/PHP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%ABSession/</id>
+    <title>PHP包含临时文件</title>
+    <link href="https://hosch3n.github.io/2020/09/04/PHP%E5%8C%85%E5%90%AB%E4%B8%B4%E6%97%B6%E6%96%87%E4%BB%B6/"/>
+    <id>https://hosch3n.github.io/2020/09/04/PHP%E5%8C%85%E5%90%AB%E4%B8%B4%E6%97%B6%E6%96%87%E4%BB%B6/</id>
+    <published>2020-09-04T09:54:48.000Z</published>
+    <updated>2020-09-04T10:07:35.721Z</updated>
+    
+    <content type="html"><![CDATA[<p>即使PHP后端不是处理文件上传的代码，在收到上传文件数据时同样会创建缓存文件，文件名可以在<code>$_FILES</code>变量中找到（通常为<code>/tmp/php[六个随机字符]</code>），通过phpinfo页面可以读到<code>$_FILES</code>。</p><p>一般的请求等获取到phpinfo中的文件名时已经结束了，此时可控的临时文件就已经被删掉了，但由于phpinfo中<code>$_FILES[file][tmp_name]</code>比其它HTTP头先输出，因此可以在HTTP头中发送大量无用数据，读到临时文件名后立即利用文件包含执行代码，通过条件竞争抢到临时文件被删除前时间窗口。</p><p><img src="/img/phpbhlswj_a.png"></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;即使PHP后端不是处理文件上传的代码，在收到上传文件数据时同样会创建缓存文件，文件名可以在&lt;code&gt;$_FILES&lt;/code&gt;变量中找到（通常为&lt;code&gt;/tmp/php[六个随机字符]&lt;/code&gt;），通过phpinfo页面可以读到&lt;code&gt;$_FILES&lt;/co</summary>
+      
+    
+    
+    
+    <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="LFI" scheme="https://hosch3n.github.io/tags/LFI/"/>
+    
+    <category term="tmp" scheme="https://hosch3n.github.io/tags/tmp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>PHP包含Session文件</title>
+    <link href="https://hosch3n.github.io/2020/09/04/PHP%E5%8C%85%E5%90%ABSession%E6%96%87%E4%BB%B6/"/>
+    <id>https://hosch3n.github.io/2020/09/04/PHP%E5%8C%85%E5%90%ABSession%E6%96%87%E4%BB%B6/</id>
     <published>2020-09-04T06:35:12.000Z</published>
-    <updated>2020-09-04T09:22:41.945Z</updated>
+    <updated>2020-09-04T09:54:29.119Z</updated>
     
     <content type="html"><![CDATA[<p>PHP的<code>session.save_path</code>配置指定了session文件的结构深度、文件权限、存放路径，格式为<code>N;MODE;/path</code>。<code>N</code>表示子文件夹划分深度，<code>MODE</code>表示文件的umask值（默认为600），<code>path</code>通常为<code>/var/lib/php/sessions</code>或<code>/tmp</code>。</p><p>PHP在大文件流式上传时，为了将上传进度存放在session中，如果不存在session则会自动初始化，直到文件上传结束后销毁（由<code>session.upload_progress.cleanup</code>指定）。当<code>session.upload_progress.enabled</code>为默认值1时，上传文件的同时传递<code>name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</code>即可利用（由<code>session.upload_progress.name</code>指定）</p><p><code>session.name</code>通常为<code>PHPSESSID</code>，用作Cookie的键名。当<code>session.use_strict_mode</code>为默认值0时，客户端可以自定义sessionID，即通过Cookie传递<code>PHPSESSID=hosch3n</code>后，服务器将创建对应的<code>sess_hosch3n</code>文件。</p><p>因此就可以在利用文件上传自动初始化session的同时自定义sessionID，并利用条件竞争在文件上传完成前通过文件包含实现代码执行。</p>]]></content>
     
