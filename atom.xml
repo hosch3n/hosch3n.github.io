@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2020-10-02T16:33:25.964Z</updated>
+  <updated>2020-10-16T09:15:35.328Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PHP代码审计Tricks</title>
+    <link href="https://hosch3n.github.io/2020/10/15/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1Tricks/"/>
+    <id>https://hosch3n.github.io/2020/10/15/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1Tricks/</id>
+    <published>2020-10-15T13:09:19.000Z</published>
+    <updated>2020-10-16T09:15:35.328Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="反序列化调用不到类"><a href="#反序列化调用不到类" class="headerlink" title="反序列化调用不到类"></a>反序列化调用不到类</h2><p><img src="/img/phpdmsjtricks_a.png"></p><p>希望调用<code>ws.php</code>中<code>CLI\Agent</code>类的析构函数，但是传入<code>new CLI\Agent()</code>的序列化字符串后并未触发<code>die</code>标记，通过动态调试发现该框架此时会去寻找<code>lib/cli/agent.php</code>（但实际上是<code>Agent</code>类与<code>WS</code>类一起写在了<code>ws.php</code>中）</p><p><img src="/img/phpdmsjtricks_b.png"></p><p>解决方法是生成序列化字符串时，通过数组<code>array(new CLI\WS(), new CLI\Agent())</code>将两个类对象按顺序一同传入。这样虽然<code>autoload</code>包含<code>agent.php</code>同样会失败，但能够包含到<code>ws.php</code>也就能成功反序列化里面的<code>Agent</code>类。</p><ul><li>也看到了通过<code>new \CLI\WS(new \CLI\Agent())</code>的形式解决的</li></ul><h2 id="链中的函数参数对应不上"><a href="#链中的函数参数对应不上" class="headerlink" title="链中的函数参数对应不上"></a>链中的函数参数对应不上</h2><p>通过PHP编写的一些自定义函数，如果一些非关键参数缺失或者多余其实影响不大。但是PHP的内置函数可能是因为由C实现的原因，兼容性就没那么高。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;反序列化调用不到类&quot;&gt;&lt;a href=&quot;#反序列化调用不到类&quot; class=&quot;headerlink&quot; title=&quot;反序列化调用不到类&quot;&gt;&lt;/a&gt;反序列化调用不到类&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/img/phpdmsjtricks_a.png&quot;&gt;&lt;/p&gt;
+&lt;</summary>
+      
+    
+    
+    
+    <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="unserialize" scheme="https://hosch3n.github.io/tags/unserialize/"/>
+    
+    <category term="php" scheme="https://hosch3n.github.io/tags/php/"/>
+    
+  </entry>
   
   <entry>
     <title>隐藏Cobaltstrike服务器</title>
