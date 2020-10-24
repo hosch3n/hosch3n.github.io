@@ -185,7 +185,7 @@
 <h3 id="漏洞分析-1"><a href="#漏洞分析-1" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p><a target="_blank" rel="noopener" href="https://github.com/top-think/framework/releases?after=v5.1.13">5.1.9</a>版本更新说明中表示包含一个安全更新，具体看到<a target="_blank" rel="noopener" href="https://github.com/top-think/framework/commit/39bb0fe6d50ee77e0779f646b10bce08c442a5e3">改进mysql驱动</a>这个commit</p>
 <p><img src="/img/tp5ldfxsqli_e.png"></p>
 <p>直接删掉了<code>default</code>分支和<code>parseArrayData</code>方法。将源码版本更新为<code>5.1.17</code>，可以看到基本与SQL注入1逻辑相同。</p>
-<p>全局搜索对应的<code>parseData</code>方法，看到可由1030行的<code>insert</code>方法、1063行的<code>insertAll</code>方法或是由1134行的<code>update</code>方法触发。需要编写的对应触发逻辑用SQL注入1的就行，且可以新增一种出发方式：</p>
+<p>全局搜索对应的<code>parseData</code>方法，看到可由1030行的<code>insert</code>方法、1063行的<code>insertAll</code>方法或是由1134行的<code>update</code>方法触发。需要编写的对应触发逻辑用SQL注入1的就行，而且多了一种触发方式：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// insertAll方法接收一个二维数组</span></span><br><span class="line">db(<span class="string">&#x27;users&#x27;</span>)-&gt;insertAll([[<span class="string">&#x27;username&#x27;</span> =&gt; $username]]);</span><br></pre></td></tr></table></figure>
 
 <p>跟一下变量的传递过程可知，<code>username</code>依然对应我们需要触发的那段逻辑中switch语句的<code>$val</code>，这次进入default分支跟进<code>parseArrayData</code>方法，看到需要让<code>username[0]</code>为<code>point</code>不然就会嗝屁：</p>
