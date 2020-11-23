@@ -210,6 +210,9 @@
 </ol>
 <p><code>dict://127.0.0.1:6379/slaveof:no:one</code></p>
 <p>如果要用过认证或者是希望一把梭打完，就抓下包封装下gopher协议，道理是一样的。</p>
+<blockquote>
+<p>但是在Redis中，为了防止http协议对Redis端口的攻击，它如果检测到”POST”或者”Host:”，就会中断这次连接，并且在日志中留下这行，我们可以通过添加%00绕过<br>但是Redis是一边判断一边逐行执行，所以只要在读到”Host:”之前把需要的操作做完即可，所以不加也没关系</p>
+</blockquote>
 <ul>
 <li>附脚本</li>
 </ul>
@@ -219,6 +222,7 @@
 <p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/181599#h2-2">浅析SSRF认证攻击Redis</a></p>
 <p><a target="_blank" rel="noopener" href="http://r3start.net/index.php/2020/05/09/683">通过 SSRF 操作 Redis 主从复制写 Webshell</a></p>
 <p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/5665">浅析Redis中SSRF的利用</a></p>
+<p><a target="_blank" rel="noopener" href="https://tyaoo.github.io/2020/08/31/2020-GACTF-web/">2020 GACTF web</a></p>
 
       </div>
       
