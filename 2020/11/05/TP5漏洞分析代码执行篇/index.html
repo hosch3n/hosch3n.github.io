@@ -161,7 +161,7 @@
 <p>跟进<code>getFilter</code>方法后看上去影响不大先不管，回来继续向上跟进<code>array_walk_recursive</code>函数传递的第一和第三个参数，进而寻找调用了<code>input</code>方法的地方（<code>-&gt;input\(|::input\(</code>）：</p>
 <p><img src="/img/tp5ldfxrce_i.png"></p>
 <p>这个构造函数简直来得不要太妙（是个伏笔2333）：如果当前类中的属性名有与<code>$options</code>数组中键名相同的，就会被覆盖为相应的键值，并且给<code>$this-&gt;input</code>属性赋值了完全可控的<code>php://input</code>。</p>
-<p>有很多地方调用了<code>input</code>方法，优先看会被自动调用的<code>Request</code>类<code>param</code>方法：</p>
+<p>有很多地方调用了<code>input</code>方法，先看下<code>Request</code>类的<code>param</code>方法：</p>
 <p><img src="/img/tp5ldfxrce_j.png"></p>
 <p>出现了被更新白名单的<code>method</code>方法，至此利用链的链尾已经基本清晰：</p>
 <p>?-&gt;<code>param</code>-&gt;<code>method</code>、<code>input</code>-&gt;<code>filterValue</code>-&gt;<code>call_user_func</code></p>
