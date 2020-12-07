@@ -121,7 +121,7 @@
     <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%B0%83%E7%94%A8%E4%B8%8D%E5%88%B0%E7%B1%BB"><span class="toc-text">反序列化调用不到类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E5%AF%B9%E5%BA%94%E4%B8%8D%E4%B8%8A"><span class="toc-text">链中的函数参数对应不上</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%B0%83%E7%94%A8%E4%B8%8D%E5%88%B0%E7%B1%BB"><span class="toc-text">反序列化调用不到类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E6%97%A0%E5%8F%82%E6%95%B0RCE"><span class="toc-text">函数无参数RCE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E5%AF%B9%E5%BA%94%E4%B8%8D%E4%B8%8A"><span class="toc-text">链中的函数参数对应不上</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </div>
   </div><div class="post-content"><h2 id="反序列化调用不到类"><a href="#反序列化调用不到类" class="headerlink" title="反序列化调用不到类"></a>反序列化调用不到类</h2><p><img src="/img/phpdmsjtricks_a.png"></p>
 <p>希望调用<code>ws.php</code>中<code>CLI\Agent</code>类的析构函数，但是传入<code>new CLI\Agent()</code>的序列化字符串后并未触发<code>die</code>标记，通过动态调试发现该框架此时会去寻找<code>lib/cli/agent.php</code>（但实际上是<code>Agent</code>类与<code>WS</code>类一起写在了<code>ws.php</code>中）</p>
@@ -130,7 +130,10 @@
 <ul>
 <li>也看到了通过<code>new \CLI\WS(new \CLI\Agent())</code>的形式解决的</li>
 </ul>
+<h2 id="函数无参数RCE"><a href="#函数无参数RCE" class="headerlink" title="函数无参数RCE"></a>函数无参数RCE</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* HTTP Header</span></span><br><span class="line"><span class="comment">...</span></span><br><span class="line"><span class="comment">key: system(&#x27;ls -al&#x27;);</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">var_dump(end(getallheaders()));</span><br></pre></td></tr></table></figure>
+
 <h2 id="链中的函数参数对应不上"><a href="#链中的函数参数对应不上" class="headerlink" title="链中的函数参数对应不上"></a>链中的函数参数对应不上</h2><p>通过PHP编写的一些自定义函数，如果一些非关键参数缺失或者多余其实影响不大。但是PHP的内置函数可能是因为由C实现的原因，兼容性就没那么高。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://skysec.top/2019/03/29/PHP-Parametric-Function-RCE/">PHP Parametric Function RCE</a></p>
 
       </div>
       
