@@ -211,7 +211,7 @@
 <p><img src="/img/jcyyccss_n.png"></p>
 <p>解决这个问题最方便的办法就是用完就把stager给kill掉，用的时候再编辑下Listener并保存就会重新开起来。</p>
 <p><img src="/img/jcyyccss_o.png"></p>
-<p>比较一劳永逸的办法就是反编译出class修改抑或字节并重新加密替换回去。已经有师傅改好了现成的，不过<code>0x3e</code>这个抑或字节迟早也会被加入解密全家桶，所以还是得团队自己改好一个自用的并将知道密钥的人咩口（误。之后再用<code>grab_beacon_config.nse</code>脚本去扫描，因为抑或密钥变了自然也就扫不出了。</p>
+<p>比较一劳永逸的办法就是反编译出class修改抑或字节并重新加密替换回去。已经有师傅改好了现成的，不过<code>0x3e</code>这个抑或字节迟早也会被加入解密全家桶，所以还是得团队自己改好一个自用的并将知道密钥的人咩口（误。之后再用<code>grab_beacon_config.nse</code>脚本去扫描，因为抑或密钥变了自然也就解析不出了。</p>
 <p><img src="/img/jcyyccss_p.png"></p>
 <h2 id="JA3-S-amp-JARM"><a href="#JA3-S-amp-JARM" class="headerlink" title="JA3/S &amp; JARM"></a>JA3/S &amp; JARM</h2><p>这是一类根据Java版本、Web服务器、TLS版本等多因素TLS握手包生成指纹的方法，具体介绍及工具可参考<a target="_blank" rel="noopener" href="https://github.com/salesforce/jarm">jarm</a>。</p>
 <p>目前主要用于识别的CS的JARM指纹是<code>07d2ad16d21d21d07c42d41d00041d24a458a375eef0c576d23a7bab9a9fb1</code>，利用这个指纹去识别其实也会包含不少像Tomcat、Weblogic这类的JavaWeb服务器。且该指纹是基于JDK11，如果用JDK13去跑CS则会得到不一样的指纹。</p>
