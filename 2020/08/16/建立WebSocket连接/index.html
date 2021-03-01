@@ -46,7 +46,7 @@
 </script>
 
     <title>建立WebSocket连接 - Blog</title>
-  <meta name="generator" content="Hexo 5.0.2"></head>
+  <meta name="generator" content="Hexo 5.3.0"></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <div class="mobile-header-logo">
@@ -120,10 +120,8 @@
 
     <div class="post-content"><p>WebSocket是一种双向全双工的应用层协议，通常用在要求低延迟或需要服务器主动发送请求的地方。WSS与WS就像HTTPS与HTTP的关系一样，多了TLS加密层。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ws = <span class="keyword">new</span> WebSocket(<span class="string">&quot;wss://xxx.com/func&quot;</span>);</span><br></pre></td></tr></table></figure>
-
 <p>首次建立WS连接时会通过HTTP协议握手协商：</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/func</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: xxx.com</span><br><span class="line">...</span><br><span class="line"><span class="attribute">Connection</span>: keep-alive, Upgrade</span><br><span class="line"><span class="attribute">Upgrade</span>: websocket</span><br><span class="line"><span class="attribute">Sec-WebSocket-Version</span>: 13</span><br><span class="line"><span class="attribute">Sec-WebSocket-Key</span>: QKVMhgEVGz7jTFD5PIizrQ==</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">HTTP/1.1 <span class="number">101</span> Switching Protocol</span><br><span class="line"><span class="attribute">Connection</span>: Upgrade</span><br><span class="line"><span class="attribute">Upgrade</span>: websocket</span><br><span class="line"><span class="attribute">Sec-WebSocket-Accept</span>: GUgfO45/U2Oo5uUkpUR3jnm3zcA=</span><br><span class="line"><span class="attribute">Content-Length</span>: 0</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
 <p><code>Connection</code>与<code>Upgrade</code>表明这是WS握手，<code>Sec-WebSocket-Version</code>表示客户端希望使用的版本，<code>Sec-WebSocket-Key</code>为随机产生的Base64编码，<code>Sec-WebSocket-Accept</code>会响应该随机值的哈希。</p>
 <p>握手成功后便可基于WS协议传输任意格式的数据，常用JSON：<code>ws.send(&#123;&quot;a&quot;: 1&#125;);</code></p>
 
@@ -131,7 +129,8 @@
       
       <footer class="post-footer">
         <div class="post-tags">
-            <a href="/tags/WS/">WS</a>
+            <a href="/tags/ws/">ws</a>
+            <a href="/tags/js/">js</a>
             </div>
         
         <nav class="post-nav"><a class="prev" href="/2020/08/16/XML%E5%9F%BA%E7%A1%80%E4%B8%8EXXE%E6%B3%A8%E5%85%A5/">
