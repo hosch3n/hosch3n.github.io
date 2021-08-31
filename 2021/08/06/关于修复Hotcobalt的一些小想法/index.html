@@ -138,7 +138,7 @@
 <li>惭愧的是虽然看上去是这么一回事，但是没有仔细去看<a target="_blank" rel="noopener" href="https://github.com/Sentinel-One/CobaltStrikeParser/blob/master/extra/communication_poc.py">communication_poc.py</a>和实际打一下做试验。只是作为一个抛砖引玉的想法，说错了的话请师傅们拍砖。</li>
 </ul>
 <p>除了这个代码判断外，它默认用的是空UA头<code>EMPTY_UA_HEADERS = &#123;&quot;User-Agent&quot;:&quot;&quot;&#125;</code>发起请求，在profile中屏蔽掉空UA头可以起到缓解作用：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http-config &#123;</span><br><span class="line">    ...</span><br><span class="line">    set block_useragents &quot;curl*,lynx*,wget*, blank&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http-config &#123;</span><br><span class="line">    ...</span><br><span class="line">    set block_useragents &quot;curl*,lynx*,wget*,blank&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>更进一步可以直接关掉stager这个功能，基本就断了CobaltStrikeParser这类蹭payload去解析的工具路子，但是对后渗透会有很大影响：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set host_stage &quot;false&quot;;</span><br></pre></td></tr></table></figure>
