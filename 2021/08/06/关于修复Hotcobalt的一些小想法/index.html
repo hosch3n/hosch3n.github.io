@@ -130,12 +130,12 @@
 </blockquote>
 <p>大概猜了下关键字然后全局搜索，在BeaconC2.java中看到了相关判断代码：</p>
 <p><img src="/img/gyxfhcxf_a.png"></p>
-<p>CobaltStrikeParser模拟的beacon上线一般没有实际命令交互的，就能被这个判断给拦下来。所以把这段代码复制到漏洞相关的分支即可：</p>
+<p>CobaltStrikeParser模拟的beacon上线一般没有实际命令交互的，就能被这个判断给拦下来，把这段代码复制到漏洞相关的分支即可：</p>
 <p><img src="/img/gyxfhcxf_b.png"></p>
 <p>重新编译后测试上线可以正常使用截图功能：</p>
 <p><img src="/img/gyxfhcxf_c.png"></p>
 <ul>
-<li>惭愧的是虽然看上去是这么一回事，但是没有仔细去看<a target="_blank" rel="noopener" href="https://github.com/Sentinel-One/CobaltStrikeParser/blob/master/extra/communication_poc.py">communication_poc.py</a>和实际打一下做试验。所以只是作为一个抛砖引玉的想法，说错了的话请师傅们拍砖。</li>
+<li>惭愧的是虽然看上去是这么一回事，但是没有仔细去看<a target="_blank" rel="noopener" href="https://github.com/Sentinel-One/CobaltStrikeParser/blob/master/extra/communication_poc.py">communication_poc.py</a>和实际打一下做试验。只是作为一个抛砖引玉的想法，说错了的话请师傅们拍砖。</li>
 </ul>
 <p>除了这个代码判断外，它默认用的是空UA头<code>EMPTY_UA_HEADERS = &#123;&quot;User-Agent&quot;:&quot;&quot;&#125;</code>发起请求，在profile中屏蔽掉空UA头可以起到缓解作用：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http-config &#123;</span><br><span class="line">    ...</span><br><span class="line">    set block_useragents &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -143,7 +143,7 @@
 <p>更进一步可以直接关掉stager这个功能，基本就断了CobaltStrikeParser这类蹭payload去解析的工具路子，但是对后渗透会有很大影响：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set host_stage &quot;false&quot;;</span><br></pre></td></tr></table></figure>
 
-<p>当然也可以像<a href="https://hosch3n.github.io/2020/12/16/%E6%A3%80%E6%B5%8B%E4%B8%8E%E9%9A%90%E8%97%8FCobaltstrike%E6%9C%8D%E5%8A%A1%E5%99%A8/#stager">之前</a>说的，改掉checksum8上线规则、修改默认的抑或密钥、stager下发完payload随时kill掉这些方法辅助规避payload泄漏。</p>
+<p>所以可以通过启动teamserver时给添加Java层参数<code>-Xmx2048M</code>限制内存大小。当然也可以像<a href="https://hosch3n.github.io/2020/12/16/%E6%A3%80%E6%B5%8B%E4%B8%8E%E9%9A%90%E8%97%8FCobaltstrike%E6%9C%8D%E5%8A%A1%E5%99%A8/#stager">之前</a>说的，改掉checksum8上线规则、修改默认的抑或密钥、stager下发完payload随时kill掉这些方法辅助规避payload泄漏。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.cobaltstrike.com/2021/08/04/cobalt-strike-dos-vulnerability-cve-2021-36798/">Cobalt Strike DoS Vulnerability (CVE-2021-36798)</a></p>
 <p><a target="_blank" rel="noopener" href="https://labs.sentinelone.com/hotcobalt-new-cobalt-strike-dos-vulnerability-that-lets-you-halt-operations/">Hotcobalt – New Cobalt Strike DoS Vulnerability That Lets You Halt Operations</a></p>
 <p><a target="_blank" rel="noopener" href="https://research.nccgroup.com/2020/06/15/striking-back-at-retired-cobalt-strike-a-look-at-a-legacy-vulnerability/">Striking Back at Retired Cobalt Strike: A look at a legacy vulnerability</a></p>
