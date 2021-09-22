@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="Windows凭据窃取（二）[计划中]"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://hosch3n.github.io/2021/10/30/Windows凭据窃取（二）/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-180953397-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-180953397-1');
+</script><script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+
+    <title>Windows凭据窃取（二）[计划中] - Blog</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类
+          </li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Blog</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/categories/">
+            分类
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/about/">
+            关于
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">Windows凭据窃取（二）[计划中]
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2021-10-30
+        </span><span class="post-category">
+            <a href="/categories/%E7%BA%A2%E8%93%9D%E5%AF%B9%E6%8A%97/">红蓝对抗</a>
+            </span>
+        </div>
+    </header>
+
+    <div class="post-content"><div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="13e62eb35945d50a174db5b81ef5a86676d3960ebbf7a0cb99303bad06e4456a">41c58eb45cf8d2595182cf24053a0074c59741e7a139e91c827700b7dfdb2e330b5c43f6f547b0295d9023135bc503011d97116afeda0f415ba81f889cca321cc650880ca29d41f35eb5490d54367d5e88175ae599cbc5a41d1a8f0f72d71c474afed764fd8925cf8d73ddb83f4ac319a525141e543e2251beb9bfb8796764be26dfcb3afd2ed36c2711a3db591a4071b765de43f9c2e9c75578216a63646f5feb7811ec88f4b2d5d83209425ddeca9beca6621590d05371ed67bc44bedc33eccd9c461dd8eda88b6375e18e5aa76517e06133a32dafc5780e2dd3197254a4cec412f500a60fc18b85084fbc0efd8a7af37d704e110f8f183b6b463167c31d0aaddf20e5a174770cdd705d80df1151c443a3e385570072cb70f21b0c6e9d8333367a8197911c7402016df610bc19fddab2f8a7fa2674f9f1dcb3642e8a9bed841a0b36dcedbbfb1cf59c7d1559d5ad97ae00173026439f4063bb395ab43306154306dc2986df707b06de6cb94e38822c2cb48bcbfe8ee8cb850e73efa3e0c3f7c405cfc89f22247c47560294896d3daf60aba429e6325a98a4fd750279cd241e80aa4f75ed5cc40bfd4a4990a27d22c417307318d56040566b83ddb7eeb79230a4dca8dcde34f9cd46617b995756fd15dfdfd3ffeb80f540b199b2e01054a9133275a62102da8669119f5c83eb70577b3df9a9b4f6d1fcaf5435f33bd3b62ea3e51b8f85cfdb8d81ad1c2d3c3b1e51b38e2bc4d9eea0fbc784779dab9ec8bdc410c9c3d20f389205a4052a3bd869adf6ca342e811a2df05f8dd26fae1abac3e3c34a73cdc21afaae9514429c8187712a2aa98bfa9b69feaa15a9c90d711a90305f9f9906873789322e3561467f774bbc580a60e0920a24705f8c7f37f94955c90fb8e072a55ec28bbdf6eed21f6fc5d9ebecb4d405dbe7b0a55fa74348ce41873949fd6875ab7cfa02cc352c51059432a08d47b7dffacc36ebdd8dad3e3348ec9aeeff4c7a4af1818e61b9fa9f5d04176d79139a96645212212232a5d3383f6453bf45c6f3aeeea33f45d48c8b4ecb90e33207be49b9077f1b735b5dc89e81e290ee896c0747d5794caac7ec33ff57110ab2a95464bb047b41bbd0d05ee5dc4fe60d69a8a381afc29d1c1ccbf3f7d295c97d3e5c79d8a610780a9b4cbd37a86003bace6ff9428981693f92c7a2d425302061e8e3bc71b9a3304ba3970696d6d9835caf696f3026c204dc2c1de746d0543fcc94eed37f6b2882c474d271589b0fb7e574abbf56643f120e246789fb9aaebd984a55c0ca0c9144fdb7c8989ddfe4bd8783729de922187cdd5cc8679217268c4cafa30cb682295935e22d48e4f3ed03c65c99ff0055515d573c1a9123413e58e6c0f6806c2a687c98a580c9067ce885d319b2d24d7e9595d0fb85e488534b136ee8f93a392519168bd6fd8e89d27e47da6dde0909b97a71c9ca68db02d8df23a6d8e1c96a721d4a3a571c09b2169cb2ebb28ed3fba4951d6d13e36fb1a8d6f5b486361dd9688a2b95081773163c1a13c684aa771ac5b74a221f1cc02c89dc738f588f24238ffce996012205626fdf461be21ceb6d6a44784a2e2c00e0f6423aff089bc4b9d5c0e925063eba868e5e6597362b82c994cac52b53a6bc42acdcfd442b76cd6817741dc5be9e899903abf06913fa07ebe7d4bfb99b65c05b56dacf31ccdeaf068363c0f2a6359be0f1a0</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/ntlm/">ntlm</a>
+            <a href="/tags/relay/">relay</a>
+            <a href="/tags/exchange/">exchange</a>
+            <a href="/tags/ssrf/">ssrf</a>
+            </div>
+        
+        <nav class="post-nav"><a class="next" href="/2021/10/03/ProxyToken%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
+        <span class="next-text nav-default">ProxyToken漏洞分析[计划中]</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:hosch3n@protonmail.com" class="iconfont icon-email" title="email"></a>
+        <a target="_blank" rel="noopener" href="https://github.com/hosch3n" class="iconfont icon-github" title="github"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">&copy;2021<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hosch3n</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>

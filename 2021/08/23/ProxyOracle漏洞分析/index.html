@@ -126,13 +126,13 @@
     </div>
   </div><div class="post-content"><h2 id="影响版本"><a href="#影响版本" class="headerlink" title="影响版本"></a>影响版本</h2><h2 id="CVE-2021-31195"><a href="#CVE-2021-31195" class="headerlink" title="CVE-2021-31195"></a>CVE-2021-31195</h2><ul>
 <li>Exchange Server 2013 &lt; May21SU</li>
-<li>Exchange Server 2016 &lt; May21SU &lt; CU20</li>
-<li>Exchange Server 2019 &lt; May21SU &lt; CU9</li>
+<li>Exchange Server 2016 &lt; May21SU &lt; CU21</li>
+<li>Exchange Server 2019 &lt; May21SU &lt; CU10</li>
 </ul>
 <h2 id="CVE-2021-31196"><a href="#CVE-2021-31196" class="headerlink" title="CVE-2021-31196"></a>CVE-2021-31196</h2><ul>
 <li>Exchange Server 2013 &lt; Jul21SU</li>
-<li>Exchange Server 2016 &lt; Jul21SU &lt; CU20</li>
-<li>Exchange Server 2019 &lt; Jul21SU &lt; CU9</li>
+<li>Exchange Server 2016 &lt; Jul21SU</li>
+<li>Exchange Server 2019 &lt; Jul21SU</li>
 </ul>
 <h2 id="利用分析"><a href="#利用分析" class="headerlink" title="利用分析"></a>利用分析</h2><p>补丁层面的代码分析就不细说了，可以参考上一篇的ProxyLogon漏洞分析。</p>
 <p>CVE-2021-31195是一个1-Click的XSS，但是exchange的cookie各个字段基本都有HttpOnly，没法直接JS获取。还记得上一篇中说到的吗：</p>
@@ -166,7 +166,7 @@
         
         <nav class="post-nav"><a class="prev" href="/2021/08/24/ProxyShell%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
         <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">ProxyShell漏洞分析</span>
+        <span class="prev-text nav-default">ProxyShell漏洞分析[编写中]</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     <a class="next" href="/2021/08/22/ProxyLogon%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
