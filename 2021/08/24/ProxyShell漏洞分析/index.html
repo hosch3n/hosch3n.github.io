@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
-<meta name="description" content="ProxyShell漏洞分析[编写中]"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<meta name="description" content="ProxyShell漏洞分析"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
 <link rel="canonical" href="https://hosch3n.github.io/2021/08/24/ProxyShell漏洞分析/"/>
 
 <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
@@ -45,7 +45,7 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
 </script>
 
-    <title>ProxyShell漏洞分析[编写中] - Blog</title>
+    <title>ProxyShell漏洞分析 - Blog</title>
   <meta name="generator" content="Hexo 5.4.0"></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -106,7 +106,7 @@
         <div class="content-wrapper">
           <div id="content" class="content"><article class="post">
     <header class="post-header">
-      <h1 class="post-title">ProxyShell漏洞分析[编写中]
+      <h1 class="post-title">ProxyShell漏洞分析
         </h1>
 
       <div class="post-meta">
@@ -160,7 +160,18 @@
 <p><img src="/img/proxyshell_j.png"></p>
 <p>将ProxyLogon利用流程123步套用在CVE-2021-34473上，获取SID后本地生成<code>CommonAccessToken</code>，实现以管理员身份访问后端接口：</p>
 <p><img src="/img/proxyshell_k.png"></p>
-<h3 id="CVE-2021-31207-1"><a href="#CVE-2021-31207-1" class="headerlink" title="CVE-2021-31207"></a>CVE-2021-31207</h3><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.zerodayinitiative.com/advisories/ZDI-21-821/">(Pwn2Own) Microsoft Exchange Server Autodiscover Server Side Request Forgery Authentication Bypass Vulnerability</a></p>
+<h3 id="CVE-2021-31207-1"><a href="#CVE-2021-31207-1" class="headerlink" title="CVE-2021-31207"></a>CVE-2021-31207</h3><p><code>Microsoft.Exchange.Management.Migration</code>中有一处补丁变动：</p>
+<p><img src="/img/proxyshell_l.png"></p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="keyword">string</span>[] AllowedPSTFileExtensions = <span class="keyword">new</span> <span class="keyword">string</span>[]</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;.pst&quot;</span>,</span><br><span class="line">	<span class="string">&quot;.eml&quot;</span>,</span><br><span class="line">	<span class="string">&quot;.ost&quot;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>看起来是限制了从邮箱导出时的文件后缀名，搜索官方文档基本确定对应<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/powershell/module/exchange/new-mailboxexportrequest?view=exchange-ps"><code>New-MailboxExportRequest</code></a>这个cmdlet，用于将邮箱内容导出为<code>pst</code>文件。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/5faf4800-645d-49d1-9457-2ac40eb467bd">PST编码算法和转换表</a>是一套字节置换规则。转换表看似是一张表，其实是以每256个字节为分隔的三张表。导出邮件进行编码时，由相应字节（0x00-0xff）对应到数组表中偏移（0-255），将字节替换为表中偏移对应的值。</p>
+<p>想要导出时内容为“原始数据”而非PST编码时，可以根据第一张表（<code>mpbbCrypt</code>）的字节置换规则，查询“原始数据”的字节在表中对应值的偏移，逆推得到导出前要构造的邮件内容。但微软本身也要解码PST，所以不用这么麻烦去逆推，因为第三张表（<code>mpbbCrypt + 512</code>）其实就是这个逆推的转换表。只不过我们此时变成了用解码表规则编码，这样Exchange在导出邮件对数据进行编码时，实际就变成了PST解码（妙啊，有点异或那味）</p>
+<p>对于写WebShell而言，接下来可以通过SMTP发送邮件或是EWS接口操作某个账户邮箱，将构造好的Payload作为附件引入目标邮箱。随后基于WinRM协议与<code>/powershell</code>接口通信（目前有<code>重写pypsrp.wsman</code>和利用代理服务器<code>重写通信流量</code>两种方案），赋予<code>administrator</code>用户邮箱导出权限，并利用UNC路径将目标邮件导出至Web服务目录：</p>
+<figure class="highlight ps"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">New-ManagementRoleAssignment</span> <span class="literal">-SecurityGroup</span> <span class="string">&quot;Mailbox Import Export&quot;</span> <span class="literal">-User</span> <span class="string">&quot;administrator&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">New-MailboxExportRequest</span> <span class="literal">-Mailbox</span> SomeUser <span class="literal">-IncludeFolders</span> <span class="string">&quot;#Inbox#&quot;</span> <span class="literal">-FilePath</span> \\<span class="number">127.0</span>.<span class="number">0.1</span>\c<span class="variable">$</span>\somepath\api.aspx</span><br></pre></td></tr></table></figure>
+
+<p>除了写WebShell，也可以考虑利用其它写文件GetShell的方式，毕竟现在不像27065一样有长度和格式限制。也不要局限于写文件上，<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps">ExchangePowerShell</a>还有相当多的cmdlet可用:D</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.zerodayinitiative.com/advisories/ZDI-21-821/">(Pwn2Own) Microsoft Exchange Server Autodiscover Server Side Request Forgery Authentication Bypass Vulnerability</a></p>
 <p><a target="_blank" rel="noopener" href="https://peterjson.medium.com/reproducing-the-proxyshell-pwn2own-exploit-49743a4ea9a1">Reproducing The ProxyShell Pwn2Own Exploit</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.riskivy.com/exchange-proxyshell%e6%bc%8f%e6%b4%9e%e5%a4%8d%e7%8e%b0%e5%8f%8a%e5%88%86%e6%9e%90/">Exchange ProxyShell漏洞复现及分析</a></p>
 
