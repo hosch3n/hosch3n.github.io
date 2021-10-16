@@ -13,8 +13,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
-<meta name="description" content="CS43伪破解与二次开发"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
-<link rel="canonical" href="https://hosch3n.github.io/2021/05/29/CS43伪破解与二次开发/"/>
+<meta name="description" content="CS[和谐]与二次开发"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://hosch3n.github.io/2021/05/29/CS[和谐]与二次开发/"/>
 
 <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
@@ -45,7 +45,7 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
 </script>
 
-    <title>CS43伪破解与二次开发 - Blog</title>
+    <title>CS[和谐]与二次开发 - Blog</title>
   <meta name="generator" content="Hexo 5.4.0"></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -106,7 +106,7 @@
         <div class="content-wrapper">
           <div id="content" class="content"><article class="post">
     <header class="post-header">
-      <h1 class="post-title">CS43伪破解与二次开发
+      <h1 class="post-title">CS[和谐]与二次开发
         </h1>
 
       <div class="post-meta">
@@ -121,24 +121,28 @@
     <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LV0"><span class="toc-text">LV0</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LV1"><span class="toc-text">LV1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LV2"><span class="toc-text">LV2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LV3"><span class="toc-text">LV3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LV0"><span class="toc-text">LV0</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LV1"><span class="toc-text">LV1</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4%E6%9B%B4%E6%96%B0"><span class="toc-text">4.4更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LV2"><span class="toc-text">LV2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LV3"><span class="toc-text">LV3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </div>
-  </div><div class="post-content"><p>cobaltstrike.auth是被RSA私钥签名（加密）的授权文件，客户端加载时会利用内置的RSA公钥对其解密，解析获取到试用水印、授权版本、有效期、AES密钥、HMAC等内容。关键的AES密钥和HMAC256用于连接服务器时，解密和校验sleeve中的动态链接库。</p>
-<h2 id="LV0"><a href="#LV0" class="headerlink" title="LV0"></a>LV0</h2><p>破解cobaltstrike 4.x的前提是要么得到了泄漏的auth文件（或里面的关键key），要么得到了解密后的sleeve中的动态链接库。</p>
-<h2 id="LV1"><a href="#LV1" class="headerlink" title="LV1"></a>LV1</h2><p>当得到了<a target="_blank" rel="noopener" href="https://www.upload.ee/files/13104600/cobaltstrike.jar.html">原版Jar包</a>、重新签发的<a href="https://hosch3n.github.io/files/cobaltstrike.auth">auth文件</a>和对应的<a href="https://hosch3n.github.io/files/authkey.pub">公钥</a>时，只需替换官方内置的公钥即可。具体操作如下：</p>
+  </div><div class="post-content"><p>更新：<a target="_blank" rel="noopener" href="https://github.com/github/dmca/blob/master/2021/10/2021-10-12-cobalt-strike.md">DMCA警告</a>导致博客被Github禁用，已删除相关敏感信息。本文其余信息仅为学习研究加密思路的个人笔记。</p>
+<hr>
+<p>cobalt[和谐]str[和谐]ike.auth是被RSA私钥签名（加密）的授权文件，客户端加载时会利用内置的RSA公钥对其解密，解析获取到试用水印、授权版本、有效期、AES密钥、HMAC等内容。关键的AES密钥和HMAC256用于连接服务器时，解密和校验sleeve中的动态链接库。</p>
+<h2 id="LV0"><a href="#LV0" class="headerlink" title="LV0"></a>LV0</h2><p>cobalt[和谐]str[和谐]ike 4.x的前提是要么得到了泄漏的auth文件（或里面的关键key），要么得到了解密后的sleeve中的动态链接库。</p>
+<h2 id="LV1"><a href="#LV1" class="headerlink" title="LV1"></a>LV1</h2><p>当得到了原版Jar包、重新签发的auth文件和对应的公钥时，只需替换官方内置的公钥即可。具体操作如下：</p>
 <p>I. 反编译原版Jar包</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 利用IDEA目录中的 plugins/java-decompiler/lib/java-decompiler.jar 反编译源码至ex目录中</span></span><br><span class="line">java -cp ./java-decompiler.jar org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler -dgs=<span class="literal">true</span> ./cobaltstrike.jar ./ex</span><br></pre></td></tr></table></figure>
 
 <p>II. 新建项目并将原版Jar包作为依赖加载，配置好Artifacts</p>
 <p><img src="/img/cswpjyek_a.png"></p>
-<p>III. 解压反编译后的jar包，替换resources/authkey.pub，修改common/AuthCrypto中的md5校验为公钥对应的哈希<code>5e5c629ad2673a45b4d3c69984dbdf36</code></p>
+<p>III. 解压反编译后的jar包，替换resources/auth[和谐]key.pub，修改common/AuthCrypto中的md5校验为公钥对应的哈希</p>
 <p>IV. 将beacon/BeaconData中49行的<code>this.shouldPad</code>修改为false，去除exit</p>
+<h3 id="4-4更新"><a href="#4-4更新" class="headerlink" title="4.4更新"></a>4.4更新</h3><p>将common/Helper#startHelper中53行的<code>return var2</code>修改为<code>return true</code>，注释common/Starter和Starter2中<code>initializeStarter</code>方法的exit，注释beacon/CommandBuilder中<code>synchronized</code>的<code>var1 = false</code>部分。</p>
 <h2 id="LV2"><a href="#LV2" class="headerlink" title="LV2"></a>LV2</h2><p>基于原版Jar包和关键key，根据逆向的代码逻辑倒推出auth文件内容，自己生成RSA密钥对并签发auth文件。</p>
 <p>由common/Authorization可以看出，auth文件中存放的字节数组依次为4位文件头、2位文件长度、4位有效期、4位水印、1位有效版本、3x(1+16)位未起作用的数据（1位用于标识长度，猜测是官方用于定位原auth文件的购买者身份？）、1位标识关键key长度、关键key。</p>
 <p><img src="/img/cswpjyek_b.png"></p>
 <h2 id="LV3"><a href="#LV3" class="headerlink" title="LV3"></a>LV3</h2><p>利用关键key解密sleeve中的动态链接库，修改common/SleevedResource中的解密逻辑为直接返回原资源。</p>
 <p>修改beacon/BeaconPayload中的抑或key，同时通过机器码特征定位修改dll中的抑或key。废除cloudstrike/WebServer中checksum8上线机制。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://raidforums.com/Thread-Cobalt-Strike-4-3-March-17-2021-bug-fixes?page=4">Cobalt Strike 4.3 (March 17, 2021) [bug fixes]</a></p>
+<p><a target="_blank" rel="noopener" href="https://rfmirror.com/Thread-CS-4-4-Artifact-MImikatz-Extras">CS 4.4 + Artifact + MImikatz + Extras</a></p>
 <p><a target="_blank" rel="noopener" href="https://verify.cobaltstrike.com/">官网SHA256哈希校验</a></p>
 <p><a target="_blank" rel="noopener" href="https://rcoil.me/2020/11/%E3%80%90%E7%9F%A5%E8%AF%86%E5%9B%9E%E9%A1%BE%E3%80%91Cobalt%20Strike%204.0%E8%AE%A4%E8%AF%81%E5%8F%8A%E4%BF%AE%E8%A1%A5%E8%BF%87%E7%A8%8B/">【知识回顾】Cobalt Strike 4.0 认证及修补过程</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1yz411i71Z?p=10">RedCore红队学院CSTips</a></p>
