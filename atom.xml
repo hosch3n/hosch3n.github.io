@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2021-12-10T02:53:57.476Z</updated>
+  <updated>2021-12-11T08:28:28.257Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="https://hosch3n.github.io/2021/12/10/Log4j2%E6%BC%8F%E6%B4%9E%E6%B5%85%E6%9E%90/"/>
     <id>https://hosch3n.github.io/2021/12/10/Log4j2%E6%BC%8F%E6%B4%9E%E6%B5%85%E6%9E%90/</id>
     <published>2021-12-09T23:03:24.000Z</published>
-    <updated>2021-12-10T02:53:57.476Z</updated>
+    <updated>2021-12-11T08:28:28.257Z</updated>
     
-    <content type="html"><![CDATA[<p>Apache Log4j是一个基于Java的日志框架，已于2015年8月5日停止维护。Log4j2是其重构升级版本，新增的<code>Lookups</code>方法设计用于通过多种途径动态引入外部变量。<code>log4j2版本 &lt; log4j-2.15.0-rc2</code>可由JNDI注入实现远程代码执行。</p><h2 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h2><p>当POC作为message传递给<code>Logger</code>类的<code>error</code>、<code>fatal</code>等方法后，略去一些非关键流程，会进入到<code>MessagePatternConverter</code>类<code>format</code>方法对<code>$&#123;</code>内容进行解析替换：</p><p><img src="/img/log4j2_a.png"></p><p>之后进入<code>Interpolator</code>类的<code>lookup</code>方法，由前缀值<code>jndi</code>获取到<code>JndiLookup</code>类：</p><p><img src="/img/log4j2_b.png"></p><p>最终调用对应的<code>lookup</code>方法发起请求，也就是遍地开花的dnslog。。。</p><p><img src="/img/log4j2_c.png"></p><h2 id="利用流程"><a href="#利用流程" class="headerlink" title="利用流程"></a>利用流程</h2><p>JDK版本&lt;8u191，可通过LDAP引入外部JNDI Reference：</p><p><img src="/img/log4j2_d.png"></p><p>JDK版本&gt;=8u191，当存在<code>org.apache.naming.factory.BeanFactory</code>与<code>com.springsource.org.apache.el</code>等依赖时，可在返回的JNDI Reference中指定相应工厂类及setter方法，或是由LDAP引入序列化链实现RCE：</p><p><img src="/img/log4j2_e.png"></p><p>同时可以结合一些其它<code>StrLookup</code>适当变形，以及配合官方测试用例中脏数据<code>&quot;?Type=A Type&amp;Name=1100110&amp;Char=!&quot;</code>绕过rc1。</p><p><img src="/img/log4j2_f.png"></p><p>RC2版本对此异常进行了捕获。。。</p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://www.docs4dev.com/docs/en/log4j2/2.x/all/manual-lookups.html">Log4j2 Manual Lookups</a></p><p><a href="https://github.com/apache/logging-log4j2/commit/d82b47c6fae9c15fcb183170394d5f1a01ac02d3">LOG4J2-3201 - Limit the protocols JNDI can use by default</a></p>]]></content>
+    <content type="html"><![CDATA[<p>Apache Log4j是一个基于Java的日志框架，已于2015年8月5日停止维护。Log4j2是其重构升级版本，新增的<code>Lookups</code>方法设计用于通过多种途径动态引入外部变量。<code>log4j2版本 &lt; log4j-2.15.0-rc2</code>可由JNDI注入实现远程代码执行。</p><h2 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h2><p>当POC作为message传递给<code>Logger</code>类的<code>error</code>、<code>fatal</code>等方法后，略去一些非关键流程，会进入到<code>MessagePatternConverter</code>类<code>format</code>方法对<code>$&#123;</code>内容进行解析替换：</p><p><img src="/img/log4j2_a.png"></p><p>之后进入<code>Interpolator</code>类的<code>lookup</code>方法，由前缀值<code>jndi</code>获取到<code>JndiLookup</code>类：</p><p><img src="/img/log4j2_b.png"></p><p>最终调用对应的<code>lookup</code>方法发起请求，也就是遍地开花的dnslog。。。</p><p><img src="/img/log4j2_c.png"></p><h2 id="利用流程"><a href="#利用流程" class="headerlink" title="利用流程"></a>利用流程</h2><p>JDK版本&lt;8u191，可通过LDAP引入外部JNDI Reference：</p><p><img src="/img/log4j2_d.png"></p><p>JDK版本&gt;=8u191，当存在<code>org.apache.naming.factory.BeanFactory</code>与<code>com.springsource.org.apache.el</code>等依赖时，可在返回的JNDI Reference中指定相应工厂类及setter方法，或是由LDAP引入序列化链实现RCE：</p><p><img src="/img/log4j2_e.png"></p><p>同时可以结合一些其它<code>StrLookup</code>适当变形，以及配合官方测试用例中脏数据<code>&quot;?Type=A Type&amp;Name=1100110&amp;Char=!&quot;</code>绕过rc1。</p><p><img src="/img/log4j2_g.png"></p><p>RC2版本对此异常进行了捕获。。。</p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://www.docs4dev.com/docs/en/log4j2/2.x/all/manual-lookups.html">Log4j2 Manual Lookups</a></p><p><a href="https://github.com/apache/logging-log4j2/commit/d82b47c6fae9c15fcb183170394d5f1a01ac02d3">LOG4J2-3201 - Limit the protocols JNDI can use by default</a></p>]]></content>
     
     
       

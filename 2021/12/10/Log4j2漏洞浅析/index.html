@@ -135,7 +135,7 @@
 <p>JDK版本&gt;=8u191，当存在<code>org.apache.naming.factory.BeanFactory</code>与<code>com.springsource.org.apache.el</code>等依赖时，可在返回的JNDI Reference中指定相应工厂类及setter方法，或是由LDAP引入序列化链实现RCE：</p>
 <p><img src="/img/log4j2_e.png"></p>
 <p>同时可以结合一些其它<code>StrLookup</code>适当变形，以及配合官方测试用例中脏数据<code>&quot;?Type=A Type&amp;Name=1100110&amp;Char=!&quot;</code>绕过rc1。</p>
-<p><img src="/img/log4j2_f.png"></p>
+<p><img src="/img/log4j2_g.png"></p>
 <p>RC2版本对此异常进行了捕获。。。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.docs4dev.com/docs/en/log4j2/2.x/all/manual-lookups.html">Log4j2 Manual Lookups</a></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/apache/logging-log4j2/commit/d82b47c6fae9c15fcb183170394d5f1a01ac02d3">LOG4J2-3201 - Limit the protocols JNDI can use by default</a></p>
