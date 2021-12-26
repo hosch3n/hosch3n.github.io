@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="量子纠缠与密码学应用"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://hosch3n.github.io/2021/12/26/量子纠缠与密码学应用/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-180953397-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-180953397-1');
+</script><script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+
+    <title>量子纠缠与密码学应用 - Blog</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类
+          </li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Blog</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/categories/">
+            分类
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/about/">
+            关于
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">量子纠缠与密码学应用
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2021-12-26
+        </span><span class="post-category">
+            <a href="/categories/%E7%89%A9%E7%90%86%E5%AD%A6/">物理学</a>
+            <a href="/categories/%E7%89%A9%E7%90%86%E5%AD%A6/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a>
+            </span>
+        </div>
+    </header>
+
+    <div class="post-content"><div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="8544dcfcaea64543f879e87b0c40ffe8d2df768489ea1e91417185c46c3184ed">3dd7a577bfd713cc67cfcedc3d382df58aba54abcaa2fb89f59d0905e7acd96dc2a716b1eee07ae3df3ac1400709c6568157fdae4acf88fc08d186db7752bbe9f133bb92c8621f338b6ea7ecc3bb273948d58822e8b514f8fe27f86a65ed6632d94ce988a5411ca0720ab6f74f3272913eef9556f69c7ef0dfb6c066b5d4145cd8d8c86c37477d41be12ec7d386579cb9288839210b2ce5f5ae8bead4ab358e59e19d57d66a309bd9c4de72b851e3424dfd0048c818edb1cc88454312afcffa2554a32cc7d173087f95d5b25592976dd3fdb16cdd951d7fbb107cc041615eb36321864e58af2c023c8d35c1b69f3be1264baee2265d73495553ba83c6269b19c3af8002baffcc06fc33f4badfd66971dbc2c7d1b9732b92d24ce11588c458e7f552264c830f507d5b6475c37ea3df9c2a80c4fce38452a5691710cbdbd16e99cc32182f7a0eff33641a6f813b5b5fefd549628214d336faf2456669b3ea67eed0d60f82d356b3c4afffa93c1ba5b061cc8608664d2e7433d44c4537d39056d1f06d59f5117ee7bd61818873928f69011bd684b0b7529330b59a800016a8baa494a2469c92c32548a3c29be6db1fa183aae3b5629a50eee329fe97d6cc3a888ec97931fc4dd23e7b226eb738f1357039157bdca020b24792165e7f705b0f412df0d0c74da7bd9800b83d10262c7e3c2316ed4f002b780eb1ab1893610813f39b1eed83d33148cf21cd3193577632c0a00da4f9b94e383d46b754e2357c3d301b8f5170d2604396eaee885c64fa21f4c2cf609e998f80a34f00ecf622d519e332f87557e61b6b0be1c5c4bc6af6e5fb1e552bf486adf1599aba62d4dfee2667db2e135960ff5fce90b9d8a55b32be963962fc656bef7d7001802e0a8c4ae1017e631f7d6c9740695c2e4225177a3e4f5205f9867bc4ec9f9c8ebbd98c823e16fd4baf29613b50e06848d34188d3000fb14138f6b149ffce92c8d9f3122fee92d667e2e6f947750e317f213b2e7d766a0d27c0304061db3f1861362edf41015ef08f9d9265e401fed6082dffbfb9b92a0e6929a56f188e6864f0984aede495523b8b89fce162d26753fda2f7963cbeda085741e65f1af55bd17860ddf96e56c2f4fb3253fe500ac169e3f7dfa3dad137ff5650cadfc180c8798e198bdb0d199228b5b9803f01ac578efd111767b633331e51aa4524821f8eab97fde22389990b17779c4baf8d5ca8a98c5b6b68327f12f29094d6a4246f78098859988eed9d56e5c8243e75f3cb8d3a71d05bb4f6aef718bbd824bf8db1f983adcc048c3e8e615c34737003fac94dd43536956768a8260b6d37ca36642e6ce09bd3657439fdec1a9fb99e7ea03b71d3fa872bf6a34f1272b47cdd649c0eefe66cf0fa053a4b7aa21944632d0fe1a9d116f51c75d6b557e86066130afc3198c04492fcd9715389f405a9080529a6fec5155121c862336465686846071f77ac8b568179598c3f040459a017dcdcaa2b2ffd3093832b1e8776025ce50e471d378db83c90d37079adcfe8e937d56888758ee4d2abfa2a0fca70a7ef0cb7f8552fbdeed0f0f7b27fa89fb169130c1a67f0f693c00d91fb487ca49404f5d9372b8c319631654cda0408b8d919975237084d89ff5216b1d48aa785aac1f61b098d0f68d955b3237f363d7a779436683f6ec7729cdaac2d02aac627b2e636b3b0eb2534d8836778adefe4f8a0def0b1a4048acbb29b562e880e97074c9ddd263c9bc4816b8e81749aa836d87f2dd6a4768f960ae48fdca6a333b91748a41fe460cb67647eedd8101586c7c845e2b485403c61b6749f57e2097f5f97e28e7edb181e41c8bc9817d1770bdca376486243608fbad5aaf1595e88c3592f9bc542518d9f96b80b4ccbaf6c02fa89125a52be2cc67ee576fdb5ab828fd553c7fcec3ef7037644ffe66d543d403c603e4d16238dec90d26d1b4e01e7b0a06d3e8949298c15d9dc4df083b86f827fde1d54c087fd57830d2dfd1fd1ccdffd8f406707edab2c4dc50d469d503c51da810b54675e15f73137fbd90b433cd7192b255365b54e73f6c88085af115af5791c0640a628d2c021f60d82e73b888eb1763e75001ee0d051914678e58e52e9d8e4186550da0a97fbe00d571be8a21f3af5957d2ca28b878aad5898d83f8cc16be1c023da8412d2bb23f944822ba78fee5d86f18f0b0ae2144eca6b424fc098478da0c6cd7a3acc26b7ae6d390b8842118e9e5bbe8026e7d4dcf165a86542ac592a20f83991d0c186ee781833e792b040459b2811269fd5ddcfa9445f0f15edaa76fd8ac1b8750adac5da43178a3eccffc5312a3cb6b956093cfd40a34105faa20645933542f6a1704bc825ce04c8a5d1d62c28a1f8ace7a53e3b59d4bb1bfafdf7ea3ca3f84bd159e9c586ebafc2738bf58d7576442850879a4720b53ac46534cbc81896b9e1b945cb79c0f063dd4f712296363d26d7ff6065c6a71b4f4e409b3d9a0a1453034eadcedb1e277c97781acede6a551b7cba94cde9349ab0730b36bf231947953521766a781c1391fa2d9df52e849d657398f7dae66d3b92790d6490ecd38805b4ebd14466fd265735f4f2d044e64c2770fd70e730d256ae3b0e8cb8f127ac201cd251be87ab56e1553cf79a209af3cdc6fd74c19674b8a9534646329783a53b8195b35315fb60ae2d9873f48410e31b255937ede6ce7dde31de433c6dfdb63578cf289e6fa3b9f72a8c9b708f774a7cc1a4a47caeececf0d00f7cbc2364a096808144a03531e127ceb33b94d2e60de3ef27677aa3a48e26b8236a277d71ed2c384813a515d2268805953cfd8b00a5b154f9b7c609baa2e22b1e90351701a56d371e4a1c59ee3c8c337412d53b728448e11732a1a2200ed283915010d8c834730cac6f5348170157bca9dc8878c632323a88b6abc74cd2f819329fdea59fe10426555fa90db56787ef24eef5d3dc4f0c4d07a4cff570ac4f5344f63ae01378df6bfd87c1f6060862640c206a433f0960b6f60adc9d09c305d04a1d72f6d73375b4fd1924849783d688680d473d6b5412967fd41f2409808a6671885bc3ffe85718dd9301579e94fab11915327073bc4b49923a024419fda917d998e0775cc4bec39e0a008a7d042a3da1a0a9aa5cbd33630c7d28e5512156a5b9d8a7c6df81615a08f8dba641afa558e18d43a413f4515c7b7f2d6e976df38d1aa3a09803da3b8d449227d9cdee35a2fa9cf550adf20430fce45eb82bdd6dc773ef41158f32e3344b5d2d336b61fff3166c0773c91af63b475b0efb465cb8a715d0f4cea2c57c572b44f9804d0a9c7acb81d9f88183be175f644ade1f8da2d4db2a0de8701ac47c748497a83129d9c138ddc9d0c84450d5be912086f9dba4b064447409ac4c12557f61a17bd4439a2795a63512d8f2c32e8a4102f39403744c3198bac8a5ccb387ccf1c1f90265eef80a945432d9d778993f8d77848a569d2aecda6b779c1406bb70aacc0720c38b269ebd77070e49faa094b938402b4513d5c6ad2a3bcd2b133cc24d7dc5ade14af3b4be0e1c6824135cec4a416ce6bc111e09434b40c2f3bcbf20b0a11ed21ae173d6bec55ef8d3c8d53e636e96f351b30bd266e5a5e2d149b45be52445226131eda52e3643d3cbf292dffab6197103233341fe5946b09373d7a7394fe1acbd73031033240cbb184948e1d7df34b0910143d54a13e94e2a230442cd8e468464c5406540b7e73a0df0fea744a24806e9950265eadc6ec744c2a71a74e0ddec58b2e1ffea72b08f2c0c4ab5839df6747668b6d3a82dd947fdae6dcdb379326a89a36bd595be896c39aa13b4244bffb8b12d3cf536b4175fa5f7f130cc4596e216c75e6ba4236f2c0e3ab4974e963e106d1270c51ffe95be980085891d56e20059e7c965e71929814b568e602fc9f1c1488638c89e8028357530feee5a237ea3b07e23d599aaa00da6316f2a996f078c6b4301da78c7f5be827e39282fc0e43e34f201b23ea6a2a0267eb0ad32346cf80682d04fb0ec1a8233a1040485706c0cd1bfbb9cba020ba84bc4e4e574029c2b9b6e53b3d9da1386aa69bb2ad49eee965f7067dbb9dfc57de92755f3616d3b0cfcb1e15bbe3fc2ffb5e17adcf2095c83666c63169e1ef7860ac33ac2e7becdd01f83f88fd02af6d727babeea1a03282678cd08ed6441a7cb1004a8d78994d8ebe11f646730e1b5273244908a9e887bfeb8ef4042abff4c794228e89af2f945b7e75d17903ea502bf0fb3f7c776ea5a6b33c941c7e5351e3a6849d1ab5abc29e141a008e470276069678271f0e58be1baba470cbc91d7dff2b3eb9e33f3391b76cb33f456d4b6b5bb17e1e5c454dd5a266449ede934493c97b380a6240014cfc3c9a409e7c122d6d5c719f42c36021d6712ef4f64b752c1b5474d3ad731d9ab111880961eb771ae480f659d16da6663abc23858a8c45d776e21d331c90074ab09aca9481b2cbf64aa9d6f6f7d1e6cff28fc58214c7353131ca3cfa54cb8060796a1fbc266a113f99df6425fe8e892f5826e209e6b50811f9a7df154d33e775be5a57d804a1a9a6bc9cd018d792fd8dea375a8507a4245303af3d2b98e1798e08c335f3d3b38c0d22d8cb2779731000903e1f2c2bc3c6ccb90a5e07ae7cd3e754472373795b16e751e1b5554431de878e7aa9809dfba458cfdf7a748813e55ea10e51e19b6ca8adf62997a9458305d318aef3032e52ef475542d6b5916d5d2bd962e2e94639442067d163552579a4aca89025d5569b0f0b7ce06d2a95d81adeb22ab3795997e158a8faed1feaf3ed2b9fd965ae1ca271d7c8a963a0ffa3769995c3539d5650f22bc80f0e9c82b9007c101a156d19ed624848bc28865dc9477534e79d81d954a5847ad42d69f3ff217aaafaed09b4fca50ffc6a451ca464bf3907199b77ca8a437d</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/%E6%B3%A2%E7%B2%92%E4%BA%8C%E8%B1%A1%E6%80%A7/">波粒二象性</a>
+            <a href="/tags/%E5%8F%8C%E7%BC%9D%E5%B9%B2%E6%B6%89/">双缝干涉</a>
+            <a href="/tags/%E8%96%9B%E5%AE%9A%E9%84%82%E7%9A%84%E7%8C%AB/">薛定鄂的猫</a>
+            <a href="/tags/%E8%A7%92%E5%8A%A8%E9%87%8F%E5%AE%88%E6%81%92/">角动量守恒</a>
+            <a href="/tags/%E8%B4%9D%E5%B0%94%E4%B8%8D%E7%AD%89%E5%BC%8F/">贝尔不等式</a>
+            <a href="/tags/Aspect%E5%AE%9E%E9%AA%8C/">Aspect实验</a>
+            <a href="/tags/%E7%88%B1%E5%9B%A0%E6%96%AF%E5%9D%A6%E7%BD%97%E6%A3%AE%E6%A1%A5/">爱因斯坦罗森桥</a>
+            </div>
+        
+        <nav class="post-nav"><a class="next" href="/2021/12/10/Log4j2%E6%BC%8F%E6%B4%9E%E6%B5%85%E6%9E%90/">
+        <span class="next-text nav-default">Log4j2漏洞浅析</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:hosch3n@protonmail.com" class="iconfont icon-email" title="email"></a>
+        <a target="_blank" rel="noopener" href="https://github.com/hosch3n" class="iconfont icon-github" title="github"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">&copy;2021<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hosch3n</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>
