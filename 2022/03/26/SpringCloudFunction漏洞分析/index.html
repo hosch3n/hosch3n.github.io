@@ -123,7 +123,7 @@
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E4%B8%81%E5%88%86%E6%9E%90"><span class="toc-text">补丁分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E8%AF%9D"><span class="toc-text">后话</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </div>
-  </div><div class="post-content"><p>SpringCloudFunction是一个Servless中间件，支持基于SpEL的函数式动态路由。在特定配置下，3 &lt;= 版本 &lt;= 3.2.2（<code>commit dc5128b</code>之前）存在SpEL表达式执行导致的RCE。</p>
+  </div><div class="post-content"><p>SpringCloudFunction是一个SpringBoot开发的Servless中间件（FAAS），支持基于SpEL的函数式动态路由。在特定配置下，3 &lt;= 版本 &lt;= 3.2.2（<code>commit dc5128b</code>之前）存在SpEL表达式执行导致的RCE。</p>
 <h2 id="补丁分析"><a href="#补丁分析" class="headerlink" title="补丁分析"></a>补丁分析</h2><p>在<code>main</code>分支<a target="_blank" rel="noopener" href="https://github.com/spring-cloud/spring-cloud-function/commit/dc5128b80c6c04232a081458f637c81a64fa9b52">commit dc5128b</a>中，新增了<code>SimpleEvaluationContext</code>：</p>
 <p><img src="/img/scfspel_a.png"></p>
 <p>由<code>isViaHeader</code>变量作为flag，在解析前判断<code>spring.cloud.function.routing-expression</code>的值是不是取自HTTP头，如果是的话就用<code>SimpleEvaluationContext</code>解析SpEL语句，不是来自外部输入时（比如<code>System.setProperty</code>）才用<code>StandardEvaluationContext</code>解析。</p>
