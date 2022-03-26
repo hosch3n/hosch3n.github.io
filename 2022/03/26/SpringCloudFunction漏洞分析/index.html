@@ -134,7 +134,7 @@
 <p><img src="/img/scfspel_d.png"></p>
 <p>至此source与sink已经清晰，虽然测试用例可以模拟触发漏洞，但还是要搭出一套能实际复现的环境。刚开始时想不开，自己在那啃文档碎碎写了一两个小时demo硬是搭不起来，后来发现<a target="_blank" rel="noopener" href="https://github.com/spring-cloud/spring-cloud-function/tree/main/spring-cloud-function-samples/function-sample-pojo">官方提供的sample</a>就很好用Orz：</p>
 <p><img src="/img/scfspel_e.png"></p>
-<h2 id="后话"><a href="#后话" class="headerlink" title="后话"></a>后话</h2><p>好消息是只有Spring Cloud Function部分版本特定配置的动态路由才会受影响，坏消息是SpEL表达式存在charset、replace等多种变形。</p>
+<h2 id="后话"><a href="#后话" class="headerlink" title="后话"></a>后话</h2><p>好消息是只有Spring Cloud Function部分版本特定配置的动态路由才会受影响（<code>spring.cloud.function.definition=functionRouter</code>），坏消息是SpEL表达式存在charset、replace等多种变形。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-cloud-function/docs/3.2.2/reference/html/spring-cloud-function.html#_function_routing_and_filtering">Function Routing and Filtering</a></p>
 
       </div>
