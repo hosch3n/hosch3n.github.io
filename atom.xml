@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2022-05-19T12:35:50.618Z</updated>
+  <updated>2022-08-08T12:58:21.370Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -17,11 +17,37 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Msmap内存马生成框架（一）</title>
+    <link href="https://hosch3n.github.io/2022/08/08/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/"/>
+    <id>https://hosch3n.github.io/2022/08/08/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/</id>
+    <published>2022-08-08T08:37:10.000Z</published>
+    <updated>2022-08-08T12:58:21.370Z</updated>
+    
+    <content type="html"><![CDATA[<p>一直想要把这部分的知识沉淀一下，最近看到井喷式的新内存马后有了一些小想法，所以整了这么个烂活，作为工具的同时也是一个知识框架。如果能方便大家那就更开心了，不好用也欢迎来issue里喷俺，只是喷完要对人家负责（doge，提出建设性建议</p><hr><p>先拉一面大旗，<del>从钱老的总体设计部可以看出顶层设计的重要性</del>，抱歉调子起高了</p><p><img src="/img/msmapa_a.jpg"></p><p>内存马就是在容器本身的执行流程上，额外加上自己的操作逻辑。比如有个自动化工厂门没锁，我们溜进去，给流水线加一个专门贴狗头的机器，就是利用漏洞打内存马的过程。工厂就象征着Web应用服务器。</p><p>这个狗头机器是加在流水线开头、中间还是结尾，就对应着内存马打到Web应用服务器的不同组件里，流水线一般就是一次网络请求。</p><p>不同工厂的门有圆的有方的有菱形，所以我们的机器为了能偷运进去，就需要适配成不同的外形，但不论外形怎么变，它最终还是一台狗头机器。也就是说内存马要注入进不同的Web应用服务器，需要封装适配成不同的类，但最终还是用于执行某个操作。</p><p>我们要是想机器不止能贴狗头，而是能根据指示来决定贴上狗头、猫猫、嘤嘤鹰。<strong>外形什么的都不用变</strong>，只要升级一下贴纸模块。又或者某些安保好一点的工厂，说猫猫狗狗贴纸不得入内，我们就可以给机器加上一个二维码识别模块，运二维码进去机器内再解码成猫猫狗狗躲避安检。</p><p>贴纸模块就对应着执行体（比如执行系统命令、执行蚁剑客户端流量等），二维码模块就对应着解码器，而二维码生成器就是WebShell客户端的流量加密/编码函数。</p><p>各模块间能相互兼容，平滑替换为别的模块，在软件工程中叫做解藕。msmap做的事就是解藕组件类、编码器与执行体，把内存马这个大任务，拆分成拿context、注入组件、流量解密、代码执行等小目标。这么干除了方便自由组合外，也可以让新技术（Tomcat迟早要被师傅们插成TomShell）更快地应用在实战上。</p><blockquote><p>同理客户端payload不依赖request等对象，解藕出功能执行部分，提供一个接口让外部自己解决输入输出，单论兼容性方面也会更好一点点</p></blockquote><p>胡说八道完了，扯点踏实点的东西。用Python写主要是相对熟悉一些，但是命令行用着终究还是不太方便，不知道用Qt写GUI怎么样。目前这个选择菜单为了支持回退还费了点心思，本来用了另一种方式实现栈但是太别扭了。马子兼容性方面从beichen大佬的代码里偷师学到了用动态代理兼容<code>javax</code>与<code>jakarta</code>的办法，各种方法和类全部用反射，所以编译时不用依赖Tomcat的API了，但目前WsFilter还没调通所以这个还没能安排上自动编译。。。加载Killer本来准备兼容打包一下，后来想起yzddMr6大佬已经集成进了插件，我也就没必要再画蛇添足了。</p><p>最后希望自己能慢慢完善工具，让它支持更多容器组件，也算是作为逐渐成长的一种见证，与各位师傅共勉！</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;一直想要把这部分的知识沉淀一下，最近看到井喷式的新内存马后有了一些小想法，所以整了这么个烂活，作为工具的同时也是一个知识框架。如果能方便大家那就更开心了，不好用也欢迎来issue里喷俺，只是喷完要对人家负责（doge，提出建设性建议&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;先拉一面大旗，&lt;</summary>
+      
+    
+    
+    
+    <category term="基础设施" scheme="https://hosch3n.github.io/categories/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/"/>
+    
+    
+    <category term="Tomcat" scheme="https://hosch3n.github.io/tags/Tomcat/"/>
+    
+  </entry>
+  
+  <entry>
     <title>某C2鸡肋漏洞分析</title>
     <link href="https://hosch3n.github.io/2022/05/12/%E6%9F%90C2%E9%B8%A1%E8%82%8B%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     <id>https://hosch3n.github.io/2022/05/12/%E6%9F%90C2%E9%B8%A1%E8%82%8B%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/</id>
     <published>2022-05-12T05:08:44.000Z</published>
-    <updated>2022-05-19T12:35:50.618Z</updated>
+    <updated>2022-07-04T07:34:17.330Z</updated>
     
     <content type="html"><![CDATA[<p>CobaltStrike是一个知名的红队命令与控制框架，采用<code>Beacon &lt;-&gt; TeamServer &lt;-&gt; Client</code>架构。TeamServer存在受限路径穿越写文件与反序列化漏洞，可以被认证后客户端恶意利用。Client存在反序列化漏洞，可以被RogueCS攻击。</p><p>Author: hosch3n@逐日实验室</p><h2 id="山寨威胁建模"><a href="#山寨威胁建模" class="headerlink" title="山寨威胁建模"></a>山寨威胁建模</h2><p>由于这个软件的特殊性，我们需要想想什么才是漏洞：</p><ol><li><p>直接攻击TeamServer暴露的服务</p></li><li><p>通过Beacon攻击TeamServer</p></li><li><p>通过Client攻击TeamServer</p></li><li><p>通过TeamServer攻击Client</p></li></ol><ul><li>TeamServer控制Beacon是功能，任何所谓TeamServer攻击Beacon的操作都不能算漏洞</li></ul><p>可以看出TeamServer是核心，先从它下手。</p><h2 id="历史漏洞"><a href="#历史漏洞" class="headerlink" title="历史漏洞"></a>历史漏洞</h2><ul><li><a href="https://research.nccgroup.com/2020/06/15/striking-back-at-retired-cobalt-strike-a-look-at-a-legacy-vulnerability/">in-the-wild</a></li></ul><p>利用TeamServer从Beacon下载文件时，会将Beacon可控数据中的IP字段作为目录的特点，实现路径穿越写计划任务RCE。</p><ul><li><a href="https://www.sentinelone.com/labs/hotcobalt-new-cobalt-strike-dos-vulnerability-that-lets-you-halt-operations/">CVE-2021-36798</a></li></ul><p>利用TeamServer从Beacon加载截图和键盘记录时，会根据Beacon可控数据中的字节大小申请内存的特点，实现内存耗尽DoS。</p><ul><li><a href="https://download.cobaltstrike.com/releasenotes.txt">CVE-2022-23317</a></li></ul><p>猜测是为了兼容<code>proxy</code>的功能（路径为<code>http://</code>开头），没有对URL路径做严谨的校验。动态调试可以看出这会绕过profile相关配置，直接拿到公钥等数据：</p><p><img src="/img/mc2ldfx_a.png"></p><h2 id="虚假的DoS"><a href="#虚假的DoS" class="headerlink" title="虚假的DoS"></a>虚假的DoS</h2><p><code>BeaconC2.process_beacon_data</code>中存在一处利用条件比较苛刻的DoS。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">int</span> var4 = var3.readInt();</span><br><span class="line">...</span><br><span class="line"><span class="keyword">if</span> (var4 &gt; var3.available()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">byte</span>[] var5 = <span class="keyword">new</span> <span class="keyword">byte</span>[var4];</span><br></pre></td></tr></table></figure><h2 id="受限路径穿越"><a href="#受限路径穿越" class="headerlink" title="受限路径穿越"></a>受限路径穿越</h2><p><img src="/img/mc2ldfx_b.png"></p><p>用来防止路径穿越的核心是<code>CommonUtils.SafeFile</code>方法，判断解析前后的路径是否还以限定前缀开头。这其实可以让我们向上穿越一级并得到前缀开头的文件对象：</p><p><img src="/img/mc2ldfx_c.png"></p><ul><li><a href="https://securitylab.github.com/advisories/GHSL-2022-008_The_OWASP_Enterprise_Security_API/">CVE-2022-23457</a>就是另一个例子</li></ul><p>以<code>ManageUser.process</code>为例，Client可以通过<code>Host File</code>功能上传文件到TeamServer并映射至Web服务，这会先发出一个<code>armitage.upload</code>进行预处理，随后由<code>armitage.append</code>上传文件数据。</p><p><img src="/img/mc2ldfx_d.png"></p><p>这里Client与TeamServer基于序列化通过socket通信，<code>SafeFile</code>的二参<code>var1.arg(0)</code>客户端可控，在<code>UploadFile.result</code>拼接上前缀就可以实现受限路径穿越写文件。<del>然而这并没有什么卵用</del></p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.conn.call(<span class="string">&quot;armitage.append&quot;</span>, CommonUtils.args(<span class="keyword">this</span>.file.getName()</span><br><span class="line">|</span><br><span class="line">V</span><br><span class="line"><span class="keyword">this</span>.conn.call(<span class="string">&quot;armitage.append&quot;</span>, CommonUtils.args(<span class="string">&quot;../uploads&quot;</span>+<span class="keyword">this</span>.file.getName()</span><br></pre></td></tr></table></figure><p><img src="/img/mc2ldfx_e.png"></p><p>想到zip解压释放软链接那种套路，File确实可以透过软链接写入指向文件中，但这里似乎没法实现直接将用于路径穿越的软链接本身存进去。</p><h2 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h2><p><img src="/img/mc2ldfx_f.png"></p><p>反序列化核心是<code>TeamSocket.readObject</code>方法，实际使用的<code>ObjectInputStream.readUnshared</code>。它在<code>ManageUser.run</code>中被<code>PostAuthentication.clientAuthenticated</code>通过多线程拉起。</p><p><img src="/img/mc2ldfx_g.png"></p><p><code>client</code>来自<code>SecureServerSocket.acceptAndAuthenticate</code>中接收的客户端数据，预检密码使用<code>readUnsignedByte</code>读入，在密码比对正确时会进入上述反序列化流程。</p><p><img src="/img/mc2ldfx_h.png"></p><p>在客户端<code>Connect.dialogAction</code>发起连接时可以向TeamServer传输序列化对象，如果服务端存在gadgets环境就可被恶意利用。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.tqueue.call(<span class="string">&quot;aggressor.authenticate&quot;</span>, CommonUtils.args(var3, var6, Aggressor.VERSION), <span class="keyword">this</span>);</span><br><span class="line">|</span><br><span class="line">V</span><br><span class="line">Object payload = getObject() <span class="comment">// URLDNS, 7u21, ...</span></span><br><span class="line"><span class="keyword">this</span>.tqueue.call(<span class="string">&quot;aggressor.authenticate&quot;</span>, CommonUtils.args(var3, var6, payload), <span class="keyword">this</span>)</span><br></pre></td></tr></table></figure><ul><li>看代码流程感觉作者是考虑到了的，所以将反序列化放到了认证后</li></ul><p>随后<code>ManageUser.process</code>会将登录成功/失败的消息序列化写回客户端，我们可以把<code>SecureServerSocket.authenticate</code>改为任何密码都校验成功（欺骗客户端通过密码预检），再写回恶意序列化对象（成为RogueCS），如果客户端存在gadgets环境就可被利用。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">this</span>.authenticated &amp;&amp; <span class="string">&quot;aggressor.authenticate&quot;</span>.equals(var1.getCall()) &amp;&amp; var1.size() == <span class="number">3</span>) &#123;</span><br><span class="line">...</span><br><span class="line">    Object payload = getObject() <span class="comment">// URLDNS, 7u21, ...</span></span><br><span class="line">    <span class="keyword">this</span>.client.writeObject(var1.reply(payload))</span><br><span class="line">...</span><br></pre></td></tr></table></figure><h2 id="利用条件"><a href="#利用条件" class="headerlink" title="利用条件"></a>利用条件</h2><p>Client攻击TeamServer的话，需要知道服务端的密码（比如通过泄漏/反制得到HOME目录下<code>.aggressor.prop</code>配置文件），而通过TeamServer则可以攻击任何前来连接的Client。</p><p>危害大小取决于运行环境中gadgets的能力，我目前还没在CS内置的lib中找到有实质危害的gadgets。对于原生JRE环境而言，可以通过<code>DeserializationBomb</code>造成CPU型DoS：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Set&lt;Object&gt; root = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">Set&lt;Object&gt; s1 = root;</span><br><span class="line">Set&lt;Object&gt; s2 = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    Set&lt;Object&gt; t1 = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">    Set&lt;Object&gt; t2 = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">    t1.add(<span class="string">&quot;foo&quot;</span>); <span class="comment">// make it not equal to t2</span></span><br><span class="line">    s1.add(t1);</span><br><span class="line">    s1.add(t2);</span><br><span class="line">    s2.add(t1);</span><br><span class="line">    s2.add(t2);</span><br><span class="line">    s1 = t1;</span><br><span class="line">    s2 = t2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p><img src="/img/mc2ldfx_i.png"></p><p>这个与之前OpenSSL的DoS效果类似，多核环境只会影响单核。相关上下文大都是局部变量，也不太可能通过反序列化造成内存型DoS。所以一般也就能打个DNS自嗨，但如果以前调试漏洞在<code>jre/lib/ext</code>之类的目录引入过危险依赖，或者有大聪明用了7u21就会导致RCE：</p><p><img src="/img/mc2ldfx_j.png"></p><p>CS内置了<code>commons-io</code>、<code>sleep</code>等jar包，找到链也不是完全没有可能，或者找到一种可控方式从当前目录加载类，就能结合受限路径穿越变成RCE。万一山鸡变凤凰了呢（doge</p>]]></content>
     
@@ -41,6 +67,8 @@
     <category term="Traversal" scheme="https://hosch3n.github.io/tags/Traversal/"/>
     
     <category term="DoS" scheme="https://hosch3n.github.io/tags/DoS/"/>
+    
+    <category term="CNVD-2022-45437" scheme="https://hosch3n.github.io/tags/CNVD-2022-45437/"/>
     
   </entry>
   
@@ -91,15 +119,15 @@
     <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
     
     
+    <category term="Fastjson" scheme="https://hosch3n.github.io/tags/Fastjson/"/>
+    
     <category term="unserialize" scheme="https://hosch3n.github.io/tags/unserialize/"/>
+    
+    <category term="Xalan" scheme="https://hosch3n.github.io/tags/Xalan/"/>
     
     <category term="JNDI" scheme="https://hosch3n.github.io/tags/JNDI/"/>
     
-    <category term="Fastjson" scheme="https://hosch3n.github.io/tags/Fastjson/"/>
-    
     <category term="JDBC" scheme="https://hosch3n.github.io/tags/JDBC/"/>
-    
-    <category term="Xalan" scheme="https://hosch3n.github.io/tags/Xalan/"/>
     
   </entry>
   
@@ -124,6 +152,12 @@
     <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
     
     
+    <category term="RMI" scheme="https://hosch3n.github.io/tags/RMI/"/>
+    
+    <category term="DGC" scheme="https://hosch3n.github.io/tags/DGC/"/>
+    
+    <category term="JRMP" scheme="https://hosch3n.github.io/tags/JRMP/"/>
+    
     <category term="useCodebaseOnly" scheme="https://hosch3n.github.io/tags/useCodebaseOnly/"/>
     
     <category term="registry" scheme="https://hosch3n.github.io/tags/registry/"/>
@@ -133,35 +167,6 @@
     <category term="ysoserial" scheme="https://hosch3n.github.io/tags/ysoserial/"/>
     
     <category term="ysomap" scheme="https://hosch3n.github.io/tags/ysomap/"/>
-    
-    <category term="RMI" scheme="https://hosch3n.github.io/tags/RMI/"/>
-    
-    <category term="DGC" scheme="https://hosch3n.github.io/tags/DGC/"/>
-    
-    <category term="JRMP" scheme="https://hosch3n.github.io/tags/JRMP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>量子纠缠与密码学应用</title>
-    <link href="https://hosch3n.github.io/2021/12/26/%E9%87%8F%E5%AD%90%E7%BA%A0%E7%BC%A0%E4%B8%8E%E5%AF%86%E7%A0%81%E5%AD%A6%E5%BA%94%E7%94%A8/"/>
-    <id>https://hosch3n.github.io/2021/12/26/%E9%87%8F%E5%AD%90%E7%BA%A0%E7%BC%A0%E4%B8%8E%E5%AF%86%E7%A0%81%E5%AD%A6%E5%BA%94%E7%94%A8/</id>
-    <published>2021-12-26T15:27:53.000Z</published>
-    <updated>2022-05-11T07:51:28.817Z</updated>
-    
-    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="8544dcfcaea64543f879e87b0c40ffe8d2df768489ea1e91417185c46c3184ed">3dd7a577bfd713cc67cfcedc3d382df58aba54abcaa2fb89f59d0905e7acd96dc2a716b1eee07ae3df3ac1400709c6568157fdae4acf88fc08d186db7752bbe9f133bb92c8621f338b6ea7ecc3bb273948d58822e8b514f8fe27f86a65ed6632d94ce988a5411ca0720ab6f74f3272913eef9556f69c7ef0dfb6c066b5d4145cd8d8c86c37477d41be12ec7d386579cb9288839210b2ce5f5ae8bead4ab358e59e19d57d66a309bd9c4de72b851e3424dfd0048c818edb1cc88454312afcffa2554a32cc7d173087f95d5b25592976dd3fdb16cdd951d7fbb107cc041615eb36321864e58af2c023c8d35c1b69f3be1264baee2265d73495553ba83c6269b19c3af8002baffcc06fc33f4badfd66971dbc2c7d1b9732b92d24ce11588c458e7f552264c830f507d5b6475c37ea3df9c2a80c4fce38452a5691710cbdbd16e99cc32182f7a0eff33641a6f813b5b5fefd549628214d336faf2456669b3ea67eed0d60f82d356b3c4afffa93c1ba5b061cc8608664d2e7433d44c4537d39056d1f06d59f5117ee7bd61818873928f69011bd684b0b7529330b59a800016a8baa494a2469c92c32548a3c29be6db1fa183aae3b5629a50eee329fe97d6cc3a888ec97931fc4dd23e7b226eb738f1357039157bdca020b24792165e7f705b0f412df0d0c74da7bd9800b83d10262c7e3c2316ed4f002b780eb1ab1893610813f39b1eed83d33148cf21cd3193577632c0a00da4f9b94e383d46b754e2357c3d301b8f5170d2604396eaee885c64fa21f4c2cf609e998f80a34f00ecf622d519e332f87557e61b6b0be1c5c4bc6af6e5fb1e552bf486adf1599aba62d4dfee2667db2e135960ff5fce90b9d8a55b32be963962fc656bef7d7001802e0a8c4ae1017e631f7d6c9740695c2e4225177a3e4f5205f9867bc4ec9f9c8ebbd98c823e16fd4baf29613b50e06848d34188d3000fb14138f6b149ffce92c8d9f3122fee92d667e2e6f947750e317f213b2e7d766a0d27c0304061db3f1861362edf41015ef08f9d9265e401fed6082dffbfb9b92a0e6929a56f188e6864f0984aede495523b8b89fce162d26753fda2f7963cbeda085741e65f1af55bd17860ddf96e56c2f4fb3253fe500ac169e3f7dfa3dad137ff5650cadfc180c8798e198bdb0d199228b5b9803f01ac578efd111767b633331e51aa4524821f8eab97fde22389990b17779c4baf8d5ca8a98c5b6b68327f12f29094d6a4246f78098859988eed9d56e5c8243e75f3cb8d3a71d05bb4f6aef718bbd824bf8db1f983adcc048c3e8e615c34737003fac94dd43536956768a8260b6d37ca36642e6ce09bd3657439fdec1a9fb99e7ea03b71d3fa872bf6a34f1272b47cdd649c0eefe66cf0fa053a4b7aa21944632d0fe1a9d116f51c75d6b557e86066130afc3198c04492fcd9715389f405a9080529a6fec5155121c862336465686846071f77ac8b568179598c3f040459a017dcdcaa2b2ffd3093832b1e8776025ce50e471d378db83c90d37079adcfe8e937d56888758ee4d2abfa2a0fca70a7ef0cb7f8552fbdeed0f0f7b27fa89fb169130c1a67f0f693c00d91fb487ca49404f5d9372b8c319631654cda0408b8d919975237084d89ff5216b1d48aa785aac1f61b098d0f68d955b3237f363d7a779436683f6ec7729cdaac2d02aac627b2e636b3b0eb2534d8836778adefe4f8a0def0b1a4048acbb29b562e880e97074c9ddd263c9bc4816b8e81749aa836d87f2dd6a4768f960ae48fdca6a333b91748a41fe460cb67647eedd8101586c7c845e2b485403c61b6749f57e2097f5f97e28e7edb181e41c8bc9817d1770bdca376486243608fbad5aaf1595e88c3592f9bc542518d9f96b80b4ccbaf6c02fa89125a52be2cc67ee576fdb5ab828fd553c7fcec3ef7037644ffe66d543d403c603e4d16238dec90d26d1b4e01e7b0a06d3e8949298c15d9dc4df083b86f827fde1d54c087fd57830d2dfd1fd1ccdffd8f406707edab2c4dc50d469d503c51da810b54675e15f73137fbd90b433cd7192b255365b54e73f6c88085af115af5791c0640a628d2c021f60d82e73b888eb1763e75001ee0d051914678e58e52e9d8e4186550da0a97fbe00d571be8a21f3af5957d2ca28b878aad5898d83f8cc16be1c023da8412d2bb23f944822ba78fee5d86f18f0b0ae2144eca6b424fc098478da0c6cd7a3acc26b7ae6d390b8842118e9e5bbe8026e7d4dcf165a86542ac592a20f83991d0c186ee781833e792b040459b2811269fd5ddcfa9445f0f15edaa76fd8ac1b8750adac5da43178a3eccffc5312a3cb6b956093cfd40a34105faa20645933542f6a1704bc825ce04c8a5d1d62c28a1f8ace7a53e3b59d4bb1bfafdf7ea3ca3f84bd159e9c586ebafc2738bf58d7576442850879a4720b53ac46534cbc81896b9e1b945cb79c0f063dd4f712296363d26d7ff6065c6a71b4f4e409b3d9a0a1453034eadcedb1e277c97781acede6a551b7cba94cde9349ab0730b36bf231947953521766a781c1391fa2d9df52e849d657398f7dae66d3b92790d6490ecd38805b4ebd14466fd265735f4f2d044e64c2770fd70e730d256ae3b0e8cb8f127ac201cd251be87ab56e1553cf79a209af3cdc6fd74c19674b8a9534646329783a53b8195b35315fb60ae2d9873f48410e31b255937ede6ce7dde31de433c6dfdb63578cf289e6fa3b9f72a8c9b708f774a7cc1a4a47caeececf0d00f7cbc2364a096808144a03531e127ceb33b94d2e60de3ef27677aa3a48e26b8236a277d71ed2c384813a515d2268805953cfd8b00a5b154f9b7c609baa2e22b1e90351701a56d371e4a1c59ee3c8c337412d53b728448e11732a1a2200ed283915010d8c834730cac6f5348170157bca9dc8878c632323a88b6abc74cd2f819329fdea59fe10426555fa90db56787ef24eef5d3dc4f0c4d07a4cff570ac4f5344f63ae01378df6bfd87c1f6060862640c206a433f0960b6f60adc9d09c305d04a1d72f6d73375b4fd1924849783d688680d473d6b5412967fd41f2409808a6671885bc3ffe85718dd9301579e94fab11915327073bc4b49923a024419fda917d998e0775cc4bec39e0a008a7d042a3da1a0a9aa5cbd33630c7d28e5512156a5b9d8a7c6df81615a08f8dba641afa558e18d43a413f4515c7b7f2d6e976df38d1aa3a09803da3b8d449227d9cdee35a2fa9cf550adf20430fce45eb82bdd6dc773ef41158f32e3344b5d2d336b61fff3166c0773c91af63b475b0efb465cb8a715d0f4cea2c57c572b44f9804d0a9c7acb81d9f88183be175f644ade1f8da2d4db2a0de8701ac47c748497a83129d9c138ddc9d0c84450d5be912086f9dba4b064447409ac4c12557f61a17bd4439a2795a63512d8f2c32e8a4102f39403744c3198bac8a5ccb387ccf1c1f90265eef80a945432d9d778993f8d77848a569d2aecda6b779c1406bb70aacc0720c38b269ebd77070e49faa094b938402b4513d5c6ad2a3bcd2b133cc24d7dc5ade14af3b4be0e1c6824135cec4a416ce6bc111e09434b40c2f3bcbf20b0a11ed21ae173d6bec55ef8d3c8d53e636e96f351b30bd266e5a5e2d149b45be52445226131eda52e3643d3cbf292dffab6197103233341fe5946b09373d7a7394fe1acbd73031033240cbb184948e1d7df34b0910143d54a13e94e2a230442cd8e468464c5406540b7e73a0df0fea744a24806e9950265eadc6ec744c2a71a74e0ddec58b2e1ffea72b08f2c0c4ab5839df6747668b6d3a82dd947fdae6dcdb379326a89a36bd595be896c39aa13b4244bffb8b12d3cf536b4175fa5f7f130cc4596e216c75e6ba4236f2c0e3ab4974e963e106d1270c51ffe95be980085891d56e20059e7c965e71929814b568e602fc9f1c1488638c89e8028357530feee5a237ea3b07e23d599aaa00da6316f2a996f078c6b4301da78c7f5be827e39282fc0e43e34f201b23ea6a2a0267eb0ad32346cf80682d04fb0ec1a8233a1040485706c0cd1bfbb9cba020ba84bc4e4e574029c2b9b6e53b3d9da1386aa69bb2ad49eee965f7067dbb9dfc57de92755f3616d3b0cfcb1e15bbe3fc2ffb5e17adcf2095c83666c63169e1ef7860ac33ac2e7becdd01f83f88fd02af6d727babeea1a03282678cd08ed6441a7cb1004a8d78994d8ebe11f646730e1b5273244908a9e887bfeb8ef4042abff4c794228e89af2f945b7e75d17903ea502bf0fb3f7c776ea5a6b33c941c7e5351e3a6849d1ab5abc29e141a008e470276069678271f0e58be1baba470cbc91d7dff2b3eb9e33f3391b76cb33f456d4b6b5bb17e1e5c454dd5a266449ede934493c97b380a6240014cfc3c9a409e7c122d6d5c719f42c36021d6712ef4f64b752c1b5474d3ad731d9ab111880961eb771ae480f659d16da6663abc23858a8c45d776e21d331c90074ab09aca9481b2cbf64aa9d6f6f7d1e6cff28fc58214c7353131ca3cfa54cb8060796a1fbc266a113f99df6425fe8e892f5826e209e6b50811f9a7df154d33e775be5a57d804a1a9a6bc9cd018d792fd8dea375a8507a4245303af3d2b98e1798e08c335f3d3b38c0d22d8cb2779731000903e1f2c2bc3c6ccb90a5e07ae7cd3e754472373795b16e751e1b5554431de878e7aa9809dfba458cfdf7a748813e55ea10e51e19b6ca8adf62997a9458305d318aef3032e52ef475542d6b5916d5d2bd962e2e94639442067d163552579a4aca89025d5569b0f0b7ce06d2a95d81adeb22ab3795997e158a8faed1feaf3ed2b9fd965ae1ca271d7c8a963a0ffa3769995c3539d5650f22bc80f0e9c82b9007c101a156d19ed624848bc28865dc9477534e79d81d954a5847ad42d69f3ff217aaafaed09b4fca50ffc6a451ca464bf3907199b77ca8a437d</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>      </label>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
-    
-    
-    <summary type="html">Here&#39;s something encrypted, password is required to continue reading.</summary>
-    
-    
-    
-    <category term="物理学" scheme="https://hosch3n.github.io/categories/%E7%89%A9%E7%90%86%E5%AD%A6/"/>
-    
-    <category term="密码学" scheme="https://hosch3n.github.io/categories/%E7%89%A9%E7%90%86%E5%AD%A6/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
-    
-    
-    <category term="RSA" scheme="https://hosch3n.github.io/tags/RSA/"/>
     
   </entry>
   
@@ -185,11 +190,11 @@
     <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
     
     
+    <category term="JNDI" scheme="https://hosch3n.github.io/tags/JNDI/"/>
+    
     <category term="log4j" scheme="https://hosch3n.github.io/tags/log4j/"/>
     
     <category term="CVE-2021-44228" scheme="https://hosch3n.github.io/tags/CVE-2021-44228/"/>
-    
-    <category term="JNDI" scheme="https://hosch3n.github.io/tags/JNDI/"/>
     
   </entry>
   
@@ -274,15 +279,15 @@
     <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
     
     
+    <category term="ESXI" scheme="https://hosch3n.github.io/tags/ESXI/"/>
+    
+    <category term="VCSA" scheme="https://hosch3n.github.io/tags/VCSA/"/>
+    
     <category term="CVE-2021-22005" scheme="https://hosch3n.github.io/tags/CVE-2021-22005/"/>
     
     <category term="CVE-2021-22006" scheme="https://hosch3n.github.io/tags/CVE-2021-22006/"/>
     
     <category term="CVE-2021-22017" scheme="https://hosch3n.github.io/tags/CVE-2021-22017/"/>
-    
-    <category term="ESXI" scheme="https://hosch3n.github.io/tags/ESXI/"/>
-    
-    <category term="VCSA" scheme="https://hosch3n.github.io/tags/VCSA/"/>
     
   </entry>
   
@@ -306,15 +311,15 @@
     <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
     
     
+    <category term="Exchange" scheme="https://hosch3n.github.io/tags/Exchange/"/>
+    
+    <category term="SSRF" scheme="https://hosch3n.github.io/tags/SSRF/"/>
+    
     <category term="CVE-2021-34473" scheme="https://hosch3n.github.io/tags/CVE-2021-34473/"/>
     
     <category term="CVE-2021-34523" scheme="https://hosch3n.github.io/tags/CVE-2021-34523/"/>
     
     <category term="CVE-2021-31207" scheme="https://hosch3n.github.io/tags/CVE-2021-31207/"/>
-    
-    <category term="SSRF" scheme="https://hosch3n.github.io/tags/SSRF/"/>
-    
-    <category term="Exchange" scheme="https://hosch3n.github.io/tags/Exchange/"/>
     
   </entry>
   
@@ -340,15 +345,15 @@
     <category term="密码学" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
     
     
-    <category term="CVE-2021-31195" scheme="https://hosch3n.github.io/tags/CVE-2021-31195/"/>
-    
-    <category term="CVE-2021-31196" scheme="https://hosch3n.github.io/tags/CVE-2021-31196/"/>
-    
     <category term="Exchange" scheme="https://hosch3n.github.io/tags/Exchange/"/>
     
     <category term="XSS" scheme="https://hosch3n.github.io/tags/XSS/"/>
     
     <category term="PaddingOracle" scheme="https://hosch3n.github.io/tags/PaddingOracle/"/>
+    
+    <category term="CVE-2021-31195" scheme="https://hosch3n.github.io/tags/CVE-2021-31195/"/>
+    
+    <category term="CVE-2021-31196" scheme="https://hosch3n.github.io/tags/CVE-2021-31196/"/>
     
   </entry>
   
@@ -372,13 +377,13 @@
     <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
     
     
-    <category term="CVE-2021-26855" scheme="https://hosch3n.github.io/tags/CVE-2021-26855/"/>
-    
-    <category term="CVE-2021-27065" scheme="https://hosch3n.github.io/tags/CVE-2021-27065/"/>
+    <category term="Exchange" scheme="https://hosch3n.github.io/tags/Exchange/"/>
     
     <category term="SSRF" scheme="https://hosch3n.github.io/tags/SSRF/"/>
     
-    <category term="Exchange" scheme="https://hosch3n.github.io/tags/Exchange/"/>
+    <category term="CVE-2021-26855" scheme="https://hosch3n.github.io/tags/CVE-2021-26855/"/>
+    
+    <category term="CVE-2021-27065" scheme="https://hosch3n.github.io/tags/CVE-2021-27065/"/>
     
   </entry>
   
@@ -404,9 +409,9 @@
     <category term="密码学" scheme="https://hosch3n.github.io/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
     
     
-    <category term="cbc" scheme="https://hosch3n.github.io/tags/cbc/"/>
-    
     <category term="PaddingOracle" scheme="https://hosch3n.github.io/tags/PaddingOracle/"/>
+    
+    <category term="cbc" scheme="https://hosch3n.github.io/tags/cbc/"/>
     
   </entry>
   
@@ -456,21 +461,21 @@
     <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
     
     
-    <category term="CVE-2021-21972" scheme="https://hosch3n.github.io/tags/CVE-2021-21972/"/>
+    <category term="JNDI" scheme="https://hosch3n.github.io/tags/JNDI/"/>
     
-    <category term="CVE-2021-21985" scheme="https://hosch3n.github.io/tags/CVE-2021-21985/"/>
+    <category term="SSRF" scheme="https://hosch3n.github.io/tags/SSRF/"/>
     
     <category term="ESXI" scheme="https://hosch3n.github.io/tags/ESXI/"/>
     
     <category term="VCSA" scheme="https://hosch3n.github.io/tags/VCSA/"/>
     
-    <category term="JNDI" scheme="https://hosch3n.github.io/tags/JNDI/"/>
-    
     <category term="JNI" scheme="https://hosch3n.github.io/tags/JNI/"/>
     
-    <category term="SSRF" scheme="https://hosch3n.github.io/tags/SSRF/"/>
-    
     <category term="SpEL" scheme="https://hosch3n.github.io/tags/SpEL/"/>
+    
+    <category term="CVE-2021-21972" scheme="https://hosch3n.github.io/tags/CVE-2021-21972/"/>
+    
+    <category term="CVE-2021-21985" scheme="https://hosch3n.github.io/tags/CVE-2021-21985/"/>
     
   </entry>
   
@@ -501,11 +506,11 @@
   </entry>
   
   <entry>
-    <title>CS[和谐]与二次开发</title>
-    <link href="https://hosch3n.github.io/2021/05/29/CS[%E5%92%8C%E8%B0%90]%E4%B8%8E%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91/"/>
-    <id>https://hosch3n.github.io/2021/05/29/CS[%E5%92%8C%E8%B0%90]%E4%B8%8E%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91/</id>
+    <title>CS破解与二次开发</title>
+    <link href="https://hosch3n.github.io/2021/05/29/CS%E7%A0%B4%E8%A7%A3%E4%B8%8E%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91/"/>
+    <id>https://hosch3n.github.io/2021/05/29/CS%E7%A0%B4%E8%A7%A3%E4%B8%8E%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91/</id>
     <published>2021-05-29T12:57:09.000Z</published>
-    <updated>2022-05-12T13:34:26.428Z</updated>
+    <updated>2022-07-23T07:47:35.252Z</updated>
     
     <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="a6234b37afacf693c6e6343313b8ca1b302697454c42c1dddee2ff02ab321830">3dd7a577bfd713cc67cfcedc3d382df5f1dc5c271982282fd5f4cdefcb2b4f3c02d992e46defdbe1de98a8399ad1c17fb0c807a226746d767a25d63b24cde844ecad2861b619995e2df157a72dbe813fcf152de89843791fd60f57bfa0f2fdf5efb438cbff892e262c413bcf4082c2ff3c54c87e113125b8c75f9589d2943a9eb2526a8c529362389d455fad418a66e7657f15db2f0714b1b07e14e08353a8c6e9687752880a6e997544c0b433b29916d326d0111bf1e7ea5f8241506337efba7a12fca5d1ca70f92c986a1c3d116e5b9e03d9ff07b81fd25640c543148e566370b16592fa8b8a526636ad1f5cdb7f344899f871b549ea350cb7fdfce10024d5016ee0b893848f53973c6f5bcad234b0c968f1782108dd8288998b56fcfe04d607a2ff4fdd810f8f56ba2c02a5f1f6becc4250a5716262306a0d6e3366030a6e6e48d184eaf8793f0632853bb97d6618cb1213a99863cc34139268b8bf1028da683dfa8d43f49d114e1cb0c95b2b54d701b99ae9e175f0d24804723398ef7983f9fd6200c0b862ec914767f551e4d370cafbfb559f3460e258229258daeb7ab30296bff080afa998c62ada443ae83779d6b082cca44512ad23848683d8f3ecd4713589a7569b53b0795fa6d81ff118282df1d83f7147233f172df3278a3880218b85dc564f4c00c0b3d1187158b32747f72a4ced55e3a70b1213b4457160905ea1d278e0beb379ce434f31d57b80f9e8ab660a201e52016fb22dc73eee551c5735e2d0ed6603399b65b85bad17746a322d56fb18f47c2b45e6f922e7cb550b805989c414a1b3866e498981faf01896d5a346f3b923286d37f5b89a3723a6c89ec55018367921703a8e0e1d7b69e006ea6c30e809c06bb1510babac7febbed2b5463a33ef0d242deb28fe9eecfc3a9d727cc7f22f1dd80424ad4c64c8e3d2016a1ded8f91135ecf89d09c05622936c527a612a32f643b1860240d4f316f4113fec1e19195937690cb592aaa31fb788fbf524d986c878aab95a6727e23b4ab1a63fc15b78eeee59fa2357c6710907f0cddf4a9c93f90ca6bcdb23c66b9943e25fe93333da9a14e41229c69ce9c359a57b1ef379ce92ca5ae8ff8cb52a50e29844d3849450068ad8b00705f626f36bdb09c16e8fa6efc43981832b61123a194034d10b930454e3f33cfd36e9f7be86822188eb37b35f87340615749950eaed26c05b47296e8064805ba66cf7b36fb4eccf16c96cde00c38a67008ffb22f6ce8b571a9a56898c7d7a07f138057c893e422595440791f9764ffaaecbbbf8336aca0b356f920274700830bfc7c8e94843acda02ac0e09278128c3bb1f1db3a7c420438b3070542a3e225f1c718ed13be7940be881c93668e4b2c99547bf7b2a1dcfc6a451a83185be80fe589e39708cbf0ccfedfd34e8157905171c7dffd8ba3a9b9654718284afa0e9993ef70f3043aa0b463d2bd22ff12d9e9cad9674b7a9ee3d8b86ad06a682ff814725eb89ecbc7958c99003333e39d9c50d6d97f4ae4567804acc31da8cc45431113033bee677b93b0c30b400e2a5f55dd6e8c37994532b204f035b828c3d53136faab99b092e03e15e2961162e43a01f7eb2b3fea2643596a6b72f0d52067cafd300dca088919a95ca5beac6ecc2ebb3ef59793716c744af20daa33c24eebf36c0e678e4e730c16937a23319c245ced00d5c9db6f97490f2c11e98f3a3bc3afc5a266306214f99090b26bd58b51e02c1ba02b1bf400df0b88cd58430d8f75966e5d572c9e027542d80af3ea15c7c9986606eb1238f20a9459eca431ea360430e6bd70b18abf5756cd147656656f1a8c67b5afe858258ba92ac981da381e84dc3a0513b7a21a58cffddbd2c427af3c6cd4b02c24f1964a4098aaa0deb0775c088d053ee705c8f15bb7a6eaaed356bcf2fec233d983aaa81f28ec4d708a314afacee0b87acb5344d7dd64e9266be0dc4fea1aef04c5ad38c4d30b950470346a786d120fb3c0e2369bd07970681e686ff7c1c0810edd252cdc8298c26ec1c6e6de666e89d68f758a1b54952eb177733cb2a90cce09bb2514349c23954b9a4caa5696f4c20eb24b9ee3bbdd66f9bbb6bf2b16223a2cbab3e049a96a4bd01e8cafee5b5aff08b03959693793e015edc7d6c694615b0a6378190e64e9794ba09f42db4592265c984e266d52bba012253547e3299b2fe6033b62e2c459ef9a5c08e7bed155279d2e5c2bf2fb503ed8b4f6194d0c28171e4e44f63b1c7300653f99ec5da163fbd5b56f2c9ac0323b681ec93d3aac309eb1f78153782f9022f0bac4718e82ae8844dfce6636da5879195da2dc28f1e5f993856e05587b06ed6af317c12c8e9207f2e18cd2544e84f2306cdeee4ebb04cd958fc7ad3ac199271de5ee76a857bd71bf91ab5e749b7e3480d75db39167632e4565f4ddfdbbaf7649d323e41f49852439ac0838f4ec2cfe29f2211737cdb77aa04101c7c6649758908e83de4da240112e48d85f4a72261709f348ad4553e38b8e1797645faea200c39ea0c9144a900eef8d8dc4aa5a6b02c375df8336455bf58a54086b9ea90e22603ea435800a089542516af93bdd2dc36d79fce7191f048792028cf92db34d89c875320ecbde0029b6de9704140f26db337633fae0123170942b17a2178a62cd33cf18a5f192df46787664cfea1ae3d9ca5561a6de374d16fba01baec44fdccd5b2d12395940626262f94bca129ecd36bd0923e34c83239a40c25303c7f4a2ef2f7444c1d524b424b03afd5d0e709690b847c9179aa49b8a29da60563507e54fab6ae2b64535c3d5d742c567635d16a641afbc244536f86145216c4b266b5b5a0c2c136fc665eb4f61c82499dae28faafb6048395436b7bd1389d8eeb021f7a8870b23b116fc1bbbc92ea97fe33330845b99f774c28b7f655244d12aa3226f3650ca40dede931820c6cfdf8f793fef80d9c915f487fefe02f79f57272773d893cc73bffbfb59894ad4a003fb40f6679314173d9b9715f38de9fa0da83bba9728a1a8326a9af6f1aa35cb07612e893d533ff5b6452ddc184c657a99aff72fdc5ed9442fb841602919b7ffaf8ce9e7c73f5066d83f9aae3d130ea99cca729a06075264a541d3c9f333176c4bea991176e6110a6f81c3f76b62ebc2cc9ca5b78437068ed38aa610fc96d636491a90b334274d74f26606b06e5d5254b579eb05f3ca81c6baa1a94fff033f72afddf56a1f8de6d90e4cc8d7a148c8d31c60c961f652d30350049f4bd1b60e45867459637fe1f553201d6889de6c23a31764bd4570b65f9db4919bdc376ba5fe933482b856d43ba42358c830485016ea7b97920f0b3ac728370722c79f129c918fdf136cc00d6357879f631a07d52b95c2220743a1020e9e21f6f528ee93184efecd896112bd7e0d9e4751907518944a3907e371bfa0a0a4b33441aa3cd304ce25737c0bbb1b2ee432ac8ec8240a46ca1a3f4daa8a063a515cc323054a4356cd5b602d49d52cecc7ceb807ca7523df0c9894d77dd3de54e1b1b34ce3259687bfd51bd57f0928964f3c5b95a9c7cf73a45d72a4af4f74d16ba35f52159bb179564a1209698af9723ba19d4bf994ac039c1d5c9396c749cddf2db40a2f24d088a77cc1b4dd8a33d9be537d616c38e2267caaddddebbd135de7b813b4545122693b52dd2aba4cc00505478fc6796b32bfa7b8e2e71c0ec7efa370c47bbf486eacc023f58714f557e813a568c45531100b41aea816c840b8965c67f2ff9d43874508b25be77418b24e541e50b1c8582f8f1cd4893448dbdd2fb3d2a16c380a07753a3d1dc7e475df9b2aa2f300f893e0551d12809507b404827c5817f4a8194b9cfd9e7cba85344889785fc2ca4e52dcb99edd723e42a083012523dbe4254bb702d62816865194113ea8ebbe7347fe505d27e14953382917ed9f6aecbc7f33d18947c809c4f41b2b0d2dcf5312a149911617f0b25ca11e210aa993fe4dfbbbc2bd2bad1806eb718fc1b9440d60d84ee8903a318f4503dad7e2b77593302a9088b8c59b02356529cf4d6663ff06d6d6b6e948c214ac9ac27f3d2f819ec945949cd2e165719c03a5c179aed8afa4a3adff17b24d0d6f9e1692d4b7233477056dc4a45a1a668c2897d0bbefdb2c5523d19ba818a2c4e389140597ea1c6d26f07854c6db0255fdf1836355078e0d3a086f29902ae771096000acf800f613b739e7023afa38185ad0fced308dc42f50065275186619bd8d69ca9f36782efbb67c92d7bdda3f6d9f1c45afd3740e2ea630d66e4c3760514c7f675dfd987fa62592a64a4c6c2905cc4cb7b8e4c910d0627d87ae88431d985124627bd96c56ad7b7a28071694371a22d7fe14b77a0ef1750d7c3e4dfadafebea33bb9d1e786d16262ac8c479752a6feff9fd55b1a67f54409d7e6bcc71d4ac6d0e5630638f171fbcd4440fb7f981249e9759360aa04938596d084688733354b261ae339d34fa82cd34a55f45b60636bf7a309c9e6b5ec43d11cc04bbf4a7da469837a7dcc0763510e39efea82613330a2bf9bfb03c6fd24ad80ad76a594cbf05ac5754c8bbe4eca808e90ef503b8f09cd337775ede6511c144269acc996533f7083d8e3e8e32505519e61c26774fc0808663ff009a0bcd0020166aa1874de7903fb6586ef07d7c21c4c665433dc1f1cab75105eb418d53ca9101a5564121315da271c7e9403cf33fac57919025276d9aa0c4bdde301f5342bd9aa986267b0cbcbba7710683c735f0319a677f0a7ded9ee15f35534d98b0d8428f89e20410fce5b502ed832bc18a750732b6b9f5d6a09643abf1010166d98ec2eae2f6e470c3b09c705b9262b145b286f77c6fc0381cd18936bb2ba0c7c269daa38463b5d035bbd8bfa6ee934648a31d140bc7a2c3464f64d66bfd617de366c61dbbe423553799c01f0c62ca6c8ad1a71b32e7a5c2517052dcad9045dd93a4f69de3650126b785929fa0e4a130746c85ba41bc5083061db0a800ec08643f3b6067debd8e315dc30066879d8759a576dd849db89206c6040b94a623500fdc327440866c7d8c273a20832a338b303b3aded4e31fe2d4b26f268c50e508160e70cef875088e928933bd1ef48c897f5076a8a9bc87cf1a7bbbc308c580e8d08c4627bc356144d132aff8b8edbc6d3d623b8586a33ffffb8c05e4ec6e2e86499ff58f0349d823f562223c091067f192bb2d4c9b36b6bb007b744280bc3d1aa09f368970b7510dbd8ae095a349c18cfc11df2484873f550b278bd45b2cce9921ffbbfbfb5e056535c1b7f533441927d1c799db8c789d634b531ab35519695f0db6f97296b4eb35d8e558a7c579427dec2232db648b30356e509a3fb6a9247d35ec0a7f58152828a5c214d62133193aecb7aaa77eac6cd01584169a988aa7f01746785c97f63bbbb22eaab61d11361e4aa33862927c4f506775267dda8f6b4b1cd1c09a8c2387aadab6817d51a2ed0a9755816bbb788af702f1c7f80c6853d9010721a2ac4ae166fc5bbcff0a75176d36c1d37b36f12aaf6235aaa1349d590d3926bd6f93e79f152a17104d5a5d876bf79cf7808d86bdcc84682eeecad79a42bfd8794f3fc86c4b8d4ef3a1984e4604ef7fa95bcc0e580b878894ce5967718a1c567fdeeea49ce551636b71409956fee67484384cef15250a869323ea3f2d9751033d102fabad6eb73bf75df3f2ebea4ed3dc013cca6ff22a822e7b84a4ebaf0c93754d712ecae15f8a2f3610cb9c34bcc75dcb0de8fc5a7916ff830f79dc8a49933f90280ab343e4b6521f7dfaffe089654a9d64596152f827d4ce0be269c4bcf9eb8231323aade9f5ef72db71619659d012cff368abf58614017f13615de2d8abe31e0db4a6c241ac97c6f70f641e8577237a5917cc21cf97221320dd817cbb5be3b320810a64f5c251def2b135c1cda51d841abc64e3e83380aa49da418720097d0b3f6ad3270649a07cb5f4b5ef0a731ad43840f38bb4c27fb09db723825218158ecdc1143c382b8b9600d6e20a53aa6c306611318fae0d93bf627f5d89085c3504017301f2be863399f8e531928ea3ef023ee0e0ecdc13247de7343d3da6157b072673bc20fefaa4616</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>      </label>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
     
@@ -517,11 +522,11 @@
     <category term="基础设施" scheme="https://hosch3n.github.io/categories/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/"/>
     
     
+    <category term="IDEA" scheme="https://hosch3n.github.io/tags/IDEA/"/>
+    
     <category term="jar" scheme="https://hosch3n.github.io/tags/jar/"/>
     
     <category term="RSA" scheme="https://hosch3n.github.io/tags/RSA/"/>
-    
-    <category term="IDEA" scheme="https://hosch3n.github.io/tags/IDEA/"/>
     
     <category term="AES" scheme="https://hosch3n.github.io/tags/AES/"/>
     
@@ -554,11 +559,11 @@
     
     <category term="mimilib" scheme="https://hosch3n.github.io/tags/mimilib/"/>
     
-    <category term="relay" scheme="https://hosch3n.github.io/tags/relay/"/>
-    
     <category term="SSP" scheme="https://hosch3n.github.io/tags/SSP/"/>
     
     <category term="NTLM" scheme="https://hosch3n.github.io/tags/NTLM/"/>
+    
+    <category term="relay" scheme="https://hosch3n.github.io/tags/relay/"/>
     
   </entry>
   
@@ -583,11 +588,11 @@
     <category term="基础设施" scheme="https://hosch3n.github.io/categories/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/"/>
     
     
-    <category term="stage" scheme="https://hosch3n.github.io/tags/stage/"/>
-    
     <category term="TLS" scheme="https://hosch3n.github.io/tags/TLS/"/>
     
     <category term="CDN" scheme="https://hosch3n.github.io/tags/CDN/"/>
+    
+    <category term="stage" scheme="https://hosch3n.github.io/tags/stage/"/>
     
     <category term="JA3" scheme="https://hosch3n.github.io/tags/JA3/"/>
     
