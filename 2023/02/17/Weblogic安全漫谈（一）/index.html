@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="Weblogic安全漫谈(一)"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://hosch3n.github.io/2023/02/17/Weblogic安全漫谈（一）/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-180953397-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-180953397-1');
+</script><script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+
+    <title>Weblogic安全漫谈(一) - Blog</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类
+          </li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Blog</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/categories/">
+            分类
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/about/">
+            关于
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">Weblogic安全漫谈(一)
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2023-02-17
+        </span><span class="post-category">
+            <a href="/categories/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+            </span>
+        </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E8%A1%A5%E4%B8%81%E5%AE%9A%E4%BD%8D"><span class="toc-text">环境搭建与补丁定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2015-4852"><span class="toc-text">CVE-2015-4852</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%86%E5%90%91T3%E5%8D%8F%E8%AE%AE%E5%A4%B4"><span class="toc-text">逆向T3协议头</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </div>
+  </div><div class="post-content"><p>@frohoff在2015年初发现<code>commons-collections</code>的反序列化利用链并发布<code>ysoserial</code>工具9个月后[1]，@breenmachine对众多知名Java中间件的利用文章[2]使Java反序列化漏洞变得广为人知，Weblogic首当其冲的就是大家多少都有点耳熟的T3协议反序列化。</p>
+<h2 id="环境搭建与补丁定位"><a href="#环境搭建与补丁定位" class="headerlink" title="环境搭建与补丁定位"></a>环境搭建与补丁定位</h2><p>Weblogic官网提供无补丁的初始版本下载[3]，为了方便后续调试分析可以先把几个大版本的安装包（Generic）、以及某些有较大安全特性变化的JDK准备好。</p>
+<p>对于安全补丁，官方只提供给付费帐户下载，但普通账户可以在高级搜索页面[4]列出对应版本的补丁号与发布时间，结合官方安全公告页的CVE发布时间[5]基本可以让CVE对应上Patch。</p>
+<p><img src="/img/weblogica_a.png"></p>
+<p>有了Patch号可以通过CSDN+淘宝积分或者闲鱼黑心卖家等等方式下到补丁，Patch详情页里可以看到哈希，有官方原版zip洁癖的同学也可以对一下。</p>
+<p>环境搭建用WeblogicEnvironment[6]构建不同JDK与Weblogic版本的docker镜像会比较方便，后续也能用容器区分不同的补丁版本。运行前需要参考<code>issues/8</code>改一下Dockerfile，另外就是根据个人需要做适当调整了，比如Weblogic开启的远程调试端口默认为8453（对应IDEA默认的5005）、调整JDK版本等等。</p>
+<h2 id="CVE-2015-4852"><a href="#CVE-2015-4852" class="headerlink" title="CVE-2015-4852"></a>CVE-2015-4852</h2><p>《攻击JavaRMI概述》[7]中说过JavaRMI机制基于JRMP协议通信，Weblogic有一个与JRMP同类的应用层协议就是T3。作为Oracle商用产品的东西，协议实现并不开源且没有文档，主要靠连蒙带猜和逆向去管中窥豹。</p>
+<p><code>/u01/app/oracle/Domains/ExampleSilentWTDomain/bin/stopWebLogic.sh</code>用到了T3协议去停掉Weblogic，在执行前挂上<code>tcpdump -i any -w t3-stop.pcap</code>抓一下数据包。</p>
+<p><img src="/img/weblogica_b.png"></p>
+<p>Java原生序列化流通过十六进制为<code>ac ed 00 05</code>的字节作为开头的标识（黑话管它叫做魔术字节），<code>ysoserial</code>也正是通过原生序列化生成的payload，自然能简单粗暴地想到是不是直接替换就行了？要替换掉哪些部分呢？能看出先进行了第一次通信，请求和响应都是可读的ASCII字符，后续的的请求中似乎也没有用到响应的内容。</p>
+<p><img src="/img/weblogica_c.png"></p>
+<p>把第二次请求字节流扒下来反序列化并处理异常后可以发现存在五个Object，因为WebServer每个请求通常会起一个新的线程来处理，不用担心像内核Pwn一样没处理好异常整个系统蹦掉，那么<del>本着节能减排的原则</del>从第一处魔术字节开始替换为payload，后续部分抛掉不管必然会报错，但问题不大。即将原本第二次请求的<code>A + Serial + B + Serial + ...</code>改成<code>A + Payload</code>。</p>
+<p>构造如下脚本用作发送payload的客户端，它好比航天发射场组装火箭后打出去，payload就是火箭里用于开展科学实验的载荷。</p>
+<p><img src="/img/weblogica_d.png"></p>
+<p>那么问题来了，首先是为什么要先经过第一次通信交互（t3Bootstrap）。我们大家都知道在黑盒打不通的时候通常都是打不通的，对此小编也感到很惊讶，将payload硬莽过去只会得不到响应。这就如同需要用火箭将实验载荷送到预定轨道一样。</p>
+<p>第二个问题是payload前加上的那些字节数据是干嘛的，即火箭为什么要设计构建成这样，自然是为了让载荷顺利进入预定轨道。。。相信有的同学想喷我了，这里看似相互解释了实则什么都没解释，如果前面还能从没响应的现象下手企图萌混过关，但这里不啃代码是圆不过去了。</p>
+<p>我知道你很急，但你先别急。我们先来看看靴微简单一点的第三个问题，即payload用什么？要使用<code>ysoserial</code>生成的CC链就需要看目标环境有没有相应依赖，快速但不准确的方法是直接找有没有Jar包。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># find /u01/ -name &quot;*commons*collections*.jar&quot;</span></span><br><span class="line">/u01/app/oracle/middleware/modules/com.bea.core.apache.commons.collections_3.2.0.jar</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>为了更精确定位则可以采用META-INF等信息判断版本、运行时相应上下文能否调到关键类等等方法。</li>
+</ul>
+<p>如此我们便能利用这个祖师爷漏洞，对着周朝出土的Weblogic一顿RCE了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java -jar ysoserial.jar CommonsCollections6 <span class="string">&quot;touch /tmp/pwned&quot;</span> &gt; /tmp/poc.ser</span><br><span class="line"></span><br><span class="line">python3 t3client.py 127.0.0.1 7001 /tmp/poc.ser</span><br><span class="line"></span><br><span class="line"><span class="comment"># ls -al /tmp/ | grep &#x27;pwned&#x27;</span></span><br><span class="line">-rw-r----- 1 root root    0 Feb 17 17:18 pwned</span><br></pre></td></tr></table></figure>
+
+<h2 id="逆向T3协议头"><a href="#逆向T3协议头" class="headerlink" title="逆向T3协议头"></a>逆向T3协议头</h2><p><img src="/img/weblogica_e.png"></p>
+<p>猜测关键词暴力搜索后，找到第一次交互时响应数据的来源。下断点得到调用栈：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">connectReplyOK:<span class="number">160</span>, Login (weblogic.socket)</span><br><span class="line">readBootstrapMessage:<span class="number">189</span>, MuxableSocketT3 (weblogic.rjvm.t3)</span><br><span class="line">dispatch:<span class="number">323</span>, MuxableSocketT3 (weblogic.rjvm.t3)</span><br><span class="line">dispatch:<span class="number">394</span>, BaseAbstractMuxableSocket (weblogic.socket)</span><br><span class="line">dispatch:<span class="number">185</span>, MuxableSocketDiscriminator (weblogic.socket)</span><br><span class="line">readReadySocketOnce:<span class="number">960</span>, SocketMuxer (weblogic.socket)</span><br><span class="line">readReadySocket:<span class="number">897</span>, SocketMuxer (weblogic.socket)</span><br><span class="line">processSockets:<span class="number">130</span>, PosixSocketMuxer (weblogic.socket)</span><br><span class="line">run:<span class="number">29</span>, SocketReaderRequest (weblogic.socket)</span><br><span class="line">execute:<span class="number">42</span>, SocketReaderRequest (weblogic.socket)</span><br><span class="line">execute:<span class="number">145</span>, ExecuteThread (weblogic.kernel)</span><br><span class="line">run:<span class="number">117</span>, ExecuteThread (weblogic.kernel)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/weblogica_f.png"></p>
+<p><code>MuxableSocketT3#dispatch</code>方法根据<code>bootstrapped</code>来判断连接是否经<code>readBootstrapMessage</code>方法初始化过，解析提取的就是上文首次通信时发给服务端的数据。（这是10.3.6.0的位置，12.2.1.3在<code>com.oracle.weblogic.rjvm.jar</code>中<code>weblogic/rjvm/t3/MuxableSocketT3#readIncomingConnectionBootstrapMessage</code>）</p>
+<p><img src="/img/weblogica_g.png"></p>
+<p><code>MuxableSocketDiscriminator#dispatch</code>方法根据协议名将请求分配给HTTP、T3等不同处理类，以此实现端口复用。</p>
+<p><img src="/img/weblogica_h.png"></p>
+<p>再将断点下在<code>ObjectInputStream#readObject</code>并得到第二次请求时的调用栈：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">readObject0:<span class="number">1327</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject:<span class="number">349</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject:<span class="number">67</span>, InboundMsgAbbrev (weblogic.rjvm)</span><br><span class="line">read:<span class="number">39</span>, InboundMsgAbbrev (weblogic.rjvm)</span><br><span class="line">readMsgAbbrevs:<span class="number">283</span>, MsgAbbrevJVMConnection (weblogic.rjvm)</span><br><span class="line">init:<span class="number">215</span>, MsgAbbrevInputStream (weblogic.rjvm)</span><br><span class="line">dispatch:<span class="number">498</span>, MsgAbbrevJVMConnection (weblogic.rjvm)</span><br><span class="line">dispatch:<span class="number">330</span>, MuxableSocketT3 (weblogic.rjvm.t3)</span><br><span class="line">dispatch:<span class="number">394</span>, BaseAbstractMuxableSocket (weblogic.socket)</span><br><span class="line">readReadySocketOnce:<span class="number">960</span>, SocketMuxer (weblogic.socket)</span><br><span class="line">readReadySocket:<span class="number">897</span>, SocketMuxer (weblogic.socket)</span><br><span class="line">processSockets:<span class="number">130</span>, PosixSocketMuxer (weblogic.socket)</span><br><span class="line">run:<span class="number">29</span>, SocketReaderRequest (weblogic.socket)</span><br><span class="line">execute:<span class="number">42</span>, SocketReaderRequest (weblogic.socket)</span><br><span class="line">execute:<span class="number">145</span>, ExecuteThread (weblogic.kernel)</span><br><span class="line">run:<span class="number">117</span>, ExecuteThread (weblogic.kernel)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/weblogica_i.png"></p>
+<p>数据由<code>MsgAbbrevInputStream#init</code>调用各个方法解析。先看<code>super.init(chunk, 4)</code>，最终前4字节被skip掉：</p>
+<p><img src="/img/weblogica_j.png"></p>
+<p>这4个字节其实就是EXP中的<code>chunkLength</code>，表示包括自己在内的这段<code>Header</code>的字节长度，可以偷懒直接赋0。</p>
+<p>继续看到<code>readHeader</code>方法中存在大量标识数据：</p>
+<p><img src="/img/weblogica_k.png"></p>
+<p><code>cmd</code>字节应该是指代通信类型，可以从<code>weblogic/rjvm/JVMMessage</code>类中的变量名看出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_UNDEFINED = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_IDENTIFY_REQUEST = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_IDENTIFY_RESPONSE = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_REQUEST_CLOSE = <span class="number">11</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_IDENTIFY_REQUEST_CSHARP = <span class="number">12</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_IDENTIFY_RESPONSE_CSHARP = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_NO_ROUTE_IDENTIFY_REQUEST = <span class="number">9</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_TRANSLATED_IDENTIFY_RESPONSE = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_PEER_GONE = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_ONE_WAY = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_REQUEST = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_RESPONSE = <span class="number">6</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_ERROR_RESPONSE = <span class="number">7</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span> CMD_INTERNAL = <span class="number">8</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>QOS</code>字节没猜到含义，类初始化时被赋为十进制<code>101</code>，所以EXP同样用了这个值。</p>
+<p><code>flags</code>字节从后面<code>getFlag</code>方法可以看出用来从二进制位控制<code>hasJVMIDs</code>、<code>hasTX</code>、<code>hasTrace</code>（类比Linux的rwx权限与777）</p>
+<p><code>responseId</code>字节用于标识通信顺序、<code>invokeableId</code>字节用于标识被调用的方法，目前用不到置为初始值-1。</p>
+<p><code>abbrevOffset</code>字节顾名思义是abbrev的偏移长度，表示<code>Header</code>结尾处 相距 后面字节流<code>MsgAbbrevs</code>部分的距离，在<code>init</code>方法中会被skip掉，EXP中直接赋0表示没有额外的数据需要跳过。</p>
+<p>读完<code>Header</code>部分继续进入到<code>readMsgAbbrevs</code>方法中，会调用<code>InboundMsgAbbrev#read</code>方法：</p>
+<p><img src="/img/weblogica_l.png"></p>
+<p><code>length</code>就是EXP中的<code>countLength</code>，可以看到这个值对应for循环的次数。</p>
+<p><code>length2</code>就是EXP中的<code>capacityLength</code>，<code>bubblingAbbrever.getCapacity()</code>拿到的就是第一次请求中的<code>AS</code>，要设置得比它大才会进入<code>readObeject</code>分支。</p>
+<p>最后进入重写的有参<code>readObject</code>中，<code>msgAbbrevInputStream.read()</code>读到的字节是十进制0时进入无参<code>readObject</code>。但<code>ServerChannelInputStream</code>没有重写无参<code>readObject</code>，所以最终进到父类<code>ObjectInputStream</code>的<code>readObject</code>衔接上CC链。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="http://frohoff.github.io/appseccali-marshalling-pickles/">http://frohoff.github.io/appseccali-marshalling-pickles/</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://foxglovesecurity.com/2015/11/06/what-do-weblogic-websphere-jboss-jenkins-opennms-and-your-application-have-in-common-this-vulnerability/#weblogic">https://foxglovesecurity.com/2015/11/06/what-do-weblogic-websphere-jboss-jenkins-opennms-and-your-application-have-in-common-this-vulnerability/#weblogic</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html">https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://updates.oracle.com/Orion/AdvancedSearch/process_form">https://updates.oracle.com/Orion/AdvancedSearch/process_form</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.oracle.com/security-alerts/public-vuln-to-advisory-mapping.html">https://www.oracle.com/security-alerts/public-vuln-to-advisory-mapping.html</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/QAX-A-Team/WeblogicEnvironment">https://github.com/QAX-A-Team/WeblogicEnvironment</a></p>
+</li>
+<li><p><a href="https://hosch3n.github.io/2022/02/15/%E6%94%BB%E5%87%BBJavaRMI%E6%A6%82%E8%BF%B0/#%E6%94%BB%E5%87%BBJRMP%E5%AE%A2%E6%88%B7%E7%AB%AF">https://hosch3n.github.io/2022/02/15/%E6%94%BB%E5%87%BBJavaRMI%E6%A6%82%E8%BF%B0/#%E6%94%BB%E5%87%BBJRMP%E5%AE%A2%E6%88%B7%E7%AB%AF</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/middleware/12213/wls/WLRMI/rmi_intro.htm#WLRMI109">https://docs.oracle.com/middleware/12213/wls/WLRMI/rmi_intro.htm#WLRMI109</a></p>
+</li>
+</ol>
+
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/Weblogic/">Weblogic</a>
+            <a href="/tags/CVE-2015-4852/">CVE-2015-4852</a>
+            </div>
+        
+        <nav class="post-nav"><a class="prev" href="/2023/02/21/Weblogic%E5%AE%89%E5%85%A8%E6%BC%AB%E8%B0%88%EF%BC%88%E4%BA%8C%EF%BC%89/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Weblogic安全漫谈(二)</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    <a class="next" href="/2022/10/29/Msmap%E5%86%85%E5%AD%98%E9%A9%AC%E7%94%9F%E6%88%90%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%89%EF%BC%89/">
+        <span class="next-text nav-default">Msmap内存马生成框架（三）</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:hosch3n@protonmail.com" class="iconfont icon-email" title="email"></a>
+        <a target="_blank" rel="noopener" href="https://github.com/hosch3n" class="iconfont icon-github" title="github"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">&copy;2021 - 2023<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hosch3n</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>

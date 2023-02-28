@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="Weblogic安全漫谈(二)"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://hosch3n.github.io/2023/02/21/Weblogic安全漫谈（二）/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-180953397-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-180953397-1');
+</script><script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+
+    <title>Weblogic安全漫谈(二) - Blog</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类
+          </li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Blog</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/categories/">
+            分类
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/about/">
+            关于
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">Weblogic安全漫谈(二)
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2023-02-21
+        </span><span class="post-category">
+            <a href="/categories/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+            </span>
+        </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-0638"><span class="toc-text">CVE-2016-0638</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-3510"><span class="toc-text">CVE-2016-3510</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2017-3248"><span class="toc-text">CVE-2017-3248</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2018-2628"><span class="toc-text">CVE-2018-2628</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2018-2893"><span class="toc-text">CVE-2018-2893</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2018-3245"><span class="toc-text">CVE-2018-3245</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </div>
+  </div><div class="post-content"><p>Weblogic对于10.3.6推出了p20780171和p22248372用于修复CVE-2015-4852，在补丁详情中又提示了p21984589是它的超集，所以直接装这个合集。跟着压缩包里自带的<code>README.txt</code>走就行，注意一点是要改一下<code>bsu.sh</code>中的内存限制，不然会遇到<code>Java heap space OutOfMemoryError</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">unzip p21984589_1036_Generic.zip -d /u01/app/oracle/middleware/utils/bsu/cache_dir/</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /u01/app/oracle/middleware/utils/bsu/</span><br><span class="line"></span><br><span class="line">sed -i <span class="string">&#x27;s/512/1024/&#x27;</span> bsu.sh</span><br><span class="line"></span><br><span class="line">./bsu.sh -install -patch_download_dir=/u01/app/oracle/middleware/utils/bsu/cache_dir -patchlist=S8C2 -prod_dir=/u01/app/oracle/middleware/wlserver</span><br><span class="line"></span><br><span class="line">. /u01/app/oracle/middleware/wlserver/server/bin/setWLSEnv.sh</span><br><span class="line">/java/bin/java weblogic.version</span><br></pre></td></tr></table></figure>
+
+<p>补丁在重写的<code>ServerChannelInputStream#resolveClass</code>中新增了类名黑名单，加入了CC链比较关键的包。</p>
+<p><img src="/img/weblogicb_a.png"></p>
+<p><img src="/img/weblogicb_b.png"></p>
+<p>梳理一下：</p>
+<ol>
+<li><p>原生反序列化依然存在，流程中的各个关键方法可用</p>
+</li>
+<li><p>CC链在黑名单以外的部分，仍然可以用作调用链</p>
+</li>
+<li><p>黑名单类不在<code>ServerChannelInputStream</code>做反序列化就不受限制</p>
+</li>
+</ol>
+<p>根据第三点先获取所有用到<code>readObject</code>的地方，用<code>Serializable.class.isAssignableFrom(clazz)</code>筛出可被序列化的类，筛出数据可控的二次反序列化。找到的两个可用类刚好对应两个CVE。</p>
+<h2 id="CVE-2016-0638"><a href="#CVE-2016-0638" class="headerlink" title="CVE-2016-0638"></a>CVE-2016-0638</h2><p>看到<code>weblogic.jms.common.StreamMessageImpl#readExternal</code>，完成父类<code>readExternal</code>后读到的字节是十进制1时会进入存在<code>readObject</code>的分支。</p>
+<p><img src="/img/weblogicb_c.png"></p>
+<p>跟进中间会经过的<code>createPayload</code>方法，读到的整数大于<code>CHUNK_LINK_THRESHOLD</code>会做一些处理。中间这块的处理看不太懂，我们假设它不满足判断继续往后走，一直跟到<code>Chunk.createOneSharedChunk</code>。</p>
+<p><img src="/img/weblogicb_d.png"></p>
+<p>虽然中间一些<code>Chunk</code>的判断和操作太菜了看不懂，但到了这里就能看出，这个先前读到的被一路传过来的整数是后段数据长度。后面这段数据被完整读出并封装赋值给<code>this.payload</code>，随后进行第二次反序列化。</p>
+<p><img src="/img/weblogicb_e.png"></p>
+<p>按照同样的数据顺序重写<code>StreamMessageImpl</code>的<code>writeExternal</code>，写入相应格式的CC链序列化payload，再经过一次正常新建类对象并经过第二次序列化，最后用上一篇的EXP打出去就行。</p>
+<p><img src="/img/weblogicb_f.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">readExternal:<span class="number">1433</span>, StreamMessageImpl (weblogic.jms.common)</span><br><span class="line">readExternalData:<span class="number">1814</span>, ObjectInputStream (java.io)</span><br><span class="line">readOrdinaryObject:<span class="number">1773</span>, ObjectInputStream (java.io)</span><br><span class="line"></span><br><span class="line">resolveClass:<span class="number">110</span>, InboundMsgAbbrev$ServerChannelInputStream (weblogic.rjvm)</span><br><span class="line">readNonProxyDesc:<span class="number">1589</span>, ObjectInputStream (java.io)</span><br><span class="line">readClassDesc:<span class="number">1494</span>, ObjectInputStream (java.io)</span><br><span class="line">readOrdinaryObject:<span class="number">1748</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject0:<span class="number">1327</span>, ObjectInputStream (java.io)</span><br></pre></td></tr></table></figure>
+
+<h2 id="CVE-2016-3510"><a href="#CVE-2016-3510" class="headerlink" title="CVE-2016-3510"></a>CVE-2016-3510</h2><p>看到<code>weblogic.corba.utils.MarshalledObject#readResolve</code>，是比上一个品相更好的二次反序列化类。<code>this.objBytes</code>属性来自构造函数传入的对象，直接将payload对象作为参数给进去就行。</p>
+<p><img src="/img/weblogicb_g.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">readResolve:<span class="number">58</span>, MarshalledObject (weblogic.corba.utils)</span><br><span class="line">invoke0:-<span class="number">1</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">39</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">25</span>, DelegatingMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">597</span>, Method (java.lang.reflect)</span><br><span class="line">invokeReadResolve:<span class="number">1056</span>, ObjectStreamClass (java.io)</span><br><span class="line">readOrdinaryObject:<span class="number">1784</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject0:<span class="number">1327</span>, ObjectInputStream (java.io)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><img src="/img/weblogicb_h.png"></p>
+<p>补丁在上述两个类反序列化前单独添加了检查，随后进入下一个对RMI的利用阶段。</p>
+<h2 id="CVE-2017-3248"><a href="#CVE-2017-3248" class="headerlink" title="CVE-2017-3248"></a>CVE-2017-3248</h2><p>与此前《攻击JavaRMI概述》中唯一不同的一点是：第一步触发反序列化时的通讯协议，从Java原生的JRMP协议变为了Weblogic的T3协议。生成一个JRMPClient的payload用于在目标反序列化时发起JRMP请求，其它攻击流程一致。</p>
+<h2 id="CVE-2018-2628"><a href="#CVE-2018-2628" class="headerlink" title="CVE-2018-2628"></a>CVE-2018-2628</h2><p><code>ysoserial</code>的<code>RMIRegistryExploit</code>设计用于攻击Java原生RMI注册端，用了给<code>JRMPClient</code>的payload套上Registry动态代理的方式，来兼容Java原生registry.bind方法的参数要求。</p>
+<p><img src="/img/weblogicb_i.png"></p>
+<p>而这大概就是Weblogic企图靠<code>InboundMsgAbbrev</code>重写<code>resolveProxyClass</code>作为CVE-2017-3248的修复方式原因之一。我们是用自己的EXP作为T3客户端，不存在参数类型兼容的问题，直接去掉动态代理类的包装即可绕过检查。（或者使用不同的接口代理）</p>
+<p>不过与此同时补丁也给CC包加上了手动开关，基本断了这条链的生路。所以这一阶段的Sink链大多基于7u21/8u20。</p>
+<p><img src="/img/weblogicb_j.png"></p>
+<h2 id="CVE-2018-2893"><a href="#CVE-2018-2893" class="headerlink" title="CVE-2018-2893"></a>CVE-2018-2893</h2><p>据参考文章，在<code>cpuapr2018</code>补丁中黑名单新增了<code>sun.rmi.server.UnicastRef</code>。看到<code>java.rmi.server.RemoteObjectInvocationHandler</code>会使用父类的<code>RemoteObject</code>，读到<code>refClassName</code>时就会做一次神奇的第二次反序列化，自带绕过特效。</p>
+<p><img src="/img/weblogicb_k.png"></p>
+<p><img src="/img/weblogicb_l.png"></p>
+<p>要素察觉！CVE-2016-0638和CVE-2016-3510也是二次反序列化绕过黑名单，不过<code>MarshalledObject</code>被去掉了Serializable接口，<code>StreamMessageImpl</code>则仍然可用于绕过。</p>
+<h2 id="CVE-2018-3245"><a href="#CVE-2018-3245" class="headerlink" title="CVE-2018-3245"></a>CVE-2018-3245</h2><p>在<code>cpujul2018</code>补丁中黑名单继续增加了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java.rmi.activation</span><br><span class="line">sun.rmi.server</span><br><span class="line">java.rmi.server.UnicastRemoteObject</span><br><span class="line">java.rmi.server.RemoteObjectInvocationHandler</span><br></pre></td></tr></table></figure>
+
+<p><code>RemoteObject</code>不在黑名单的子类们仍然可用，直到<code>cpuoct2018</code>将基类纳入黑名单。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://paper.seebug.org/584">Weblogic 反序列化漏洞(CVE-2018-2628)漫谈</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/2479">Weblogic JRMP反序列化漏洞回顾</a></p>
+</li>
+</ol>
+
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/Weblogic/">Weblogic</a>
+            <a href="/tags/CVE-2016-0638/">CVE-2016-0638</a>
+            <a href="/tags/CVE-2016-3510/">CVE-2016-3510</a>
+            <a href="/tags/CVE-2017-3248/">CVE-2017-3248</a>
+            <a href="/tags/CVE-2018-2628/">CVE-2018-2628</a>
+            <a href="/tags/CVE-2018-2893/">CVE-2018-2893</a>
+            <a href="/tags/CVE-2018-3245/">CVE-2018-3245</a>
+            </div>
+        
+        <nav class="post-nav"><a class="next" href="/2023/02/17/Weblogic%E5%AE%89%E5%85%A8%E6%BC%AB%E8%B0%88%EF%BC%88%E4%B8%80%EF%BC%89/">
+        <span class="next-text nav-default">Weblogic安全漫谈(一)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:hosch3n@protonmail.com" class="iconfont icon-email" title="email"></a>
+        <a target="_blank" rel="noopener" href="https://github.com/hosch3n" class="iconfont icon-github" title="github"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">&copy;2021 - 2023<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hosch3n</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>

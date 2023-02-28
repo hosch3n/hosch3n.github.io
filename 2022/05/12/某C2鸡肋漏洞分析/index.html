@@ -124,7 +124,6 @@
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%B1%E5%AF%A8%E5%A8%81%E8%83%81%E5%BB%BA%E6%A8%A1"><span class="toc-text">山寨威胁建模</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E"><span class="toc-text">历史漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E5%81%87%E7%9A%84DoS"><span class="toc-text">虚假的DoS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%97%E9%99%90%E8%B7%AF%E5%BE%84%E7%A9%BF%E8%B6%8A"><span class="toc-text">受限路径穿越</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-text">反序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6"><span class="toc-text">利用条件</span></a></li></ol>
     </div>
   </div><div class="post-content"><p>CobaltStrike是一个知名的红队命令与控制框架，采用<code>Beacon &lt;-&gt; TeamServer &lt;-&gt; Client</code>架构。TeamServer存在受限路径穿越写文件与反序列化漏洞，可以被认证后客户端恶意利用。Client存在反序列化漏洞，可以被RogueCS攻击。</p>
-<p>Author: hosch3n@逐日实验室</p>
 <h2 id="山寨威胁建模"><a href="#山寨威胁建模" class="headerlink" title="山寨威胁建模"></a>山寨威胁建模</h2><p>由于这个软件的特殊性，我们需要想想什么才是漏洞：</p>
 <ol>
 <li><p>直接攻击TeamServer暴露的服务</p>
@@ -229,7 +228,7 @@
     <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
-  <span class="copyright-year">&copy;2021 - 2022<span class="heart">
+  <span class="copyright-year">&copy;2021 - 2023<span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>
     <span class="author">hosch3n</span>
