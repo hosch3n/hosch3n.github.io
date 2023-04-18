@@ -146,10 +146,12 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p META-INF/native-image</span><br><span class="line"><span class="variable">$JAVA_HOME</span>/bin/java -agentlib:native-image-agent=config-output-dir=META-INF/native-image HelloReflection foo xyz</span><br></pre></td></tr></table></figure>
 
 <p>不过。。。反正我抄出来的JavaShellCodeLoader这样子干它是分析不出的。。。</p>
-<p>在没提供额外配置且用到了反射时，<code>native-image</code>会编译为<code>fallback image</code>，需要把class文件和PE/ELF放一起才可以正常执行。虽然可以用enigmavb打包解决，还是希望会的师傅指点一下我怎么原生编译出来Orz</p>
+<p>在没提供额外配置且用到了反射时，<code>native-image</code>会编译为<code>fallback image</code>，需要把class文件和PE/ELF放一起才可以正常执行。虽然可以用enigmavb打包解决，<del>还是希望会的师傅指点一下我怎么原生编译出来Orz</del></p>
 <p>另一个问题是在Linux编译时默认会依赖libc，出于兼容考虑应该可以在很老的系统上编译，或者跟着<a target="_blank" rel="noopener" href="https://www.graalvm.org/22.2/reference-manual/native-image/guides/build-static-executables/">文档</a>准备好环境，通过<code>--static --libc=musl</code>参数静态打包。</p>
 <p>我因为一些库本来就有或是通过<code>pamac</code>装上了，没完全按步骤走然后报错了，似乎是把<code>-lz</code>参数当成文件：</p>
 <p><img src="/img/graalvm_a.png"></p>
+<p>更新：</p>
+<p>Linux升级ld后似乎没问题了，Windows上需要加入VS和SDK的环境变量。找不到<code>tools.jar</code>里的类时需要<code>-cp</code>指定JAR包。动态类加载参考<a target="_blank" rel="noopener" href="https://github.com/oracle/graal/pull/2442">这个PR</a>。</p>
 <h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><p>VT几乎全过，相信我那一个红的是误报（2333</p>
 <p><img src="/img/graalvm_b.png"></p>
 <p>原生shellcode就能过defender，不过瞎捣鼓还是有几率被杀～</p>
