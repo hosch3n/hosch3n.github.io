@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="ApacheJackrabbit漏洞浅析"/><meta name="keywords" content="research,analyze" /><link rel="alternate" href="/atom.xml" title="Blog" type="application/atom+xml"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://hosch3n.github.io/2023/07/26/ApacheJackrabbit漏洞浅析/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-180953397-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-180953397-1');
+</script><script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+
+    <title>ApacheJackrabbit漏洞浅析 - Blog</title>
+  <meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签
+          </li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类
+          </li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Blog</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            首页
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/tags/">
+            标签
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/categories/">
+            分类
+            </a>
+        </li>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/about/">
+            关于
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">ApacheJackrabbit漏洞浅析
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2023-07-26
+        </span><span class="post-category">
+            <a href="/categories/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+            </span>
+        </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E4%B8%81%E5%88%86%E6%9E%90"><span class="toc-text">补丁分析</span></a></li></ol>
+    </div>
+  </div><div class="post-content"><p>Apache Jackrabbit是一个Java开源内容存储库，1.0.0 &lt;= 版本 &lt; 2.20.11、2.21.0 &lt;= 版本 &lt; 2.21.18存在RMI功能导致的远程代码执行漏洞。</p>
+<h2 id="补丁分析"><a href="#补丁分析" class="headerlink" title="补丁分析"></a>补丁分析</h2><p>对比<a target="_blank" rel="noopener" href="https://github.com/apache/jackrabbit/compare/jackrabbit-2.20.10...jackrabbit-2.20.11">补丁前后两个版本</a>，基本只是删掉了CB库。从<a target="_blank" rel="noopener" href="https://jackrabbit.apache.org/archive/wiki/JCR/RemoteAccess_115513494.html">官方文档</a>可以知道存在RMI-over-HTTP的默认监听路径为<code>/rmi</code>。</p>
+<p>在<code>jackrabbit-standalone-components/src/main/resources/WEB-INF/web.xml</code>中找到<code>/rmi</code>对应类：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>RMI<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/rmi<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>RMI<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.apache.jackrabbit.servlet.remote.RemoteBindingServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/jackrabbitrce_a.png"></p>
+<p>参考官方示例用<code>URLRemoteRepository(&quot;http://localhost:8080/rmi&quot;);</code>把Stub接下来，接口里的方法并不多，最接近Object的自然是<code>Credentials</code>。</p>
+<p><img src="/img/jackrabbitrce_b.png"></p>
+<p><code>Credentials</code>是一个继承<code>Serializable</code>的空接口，我们看到4个实现之一的<code>SimpleCredentials</code>：</p>
+<p><img src="/img/jackrabbitrce_c.png"></p>
+<p>其中<code>attributes</code>属性是一个HashMap，有Object相关的setter/getter，要素齐全对接RMI反序列化CB的PriorityQueue就行，不需要知道用户密码。</p>
+<p><img src="/img/jackrabbitrce_e.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">newInstance0:-<span class="number">1</span>, NativeConstructorAccessorImpl (sun.reflect)</span><br><span class="line">newInstance:<span class="number">62</span>, NativeConstructorAccessorImpl (sun.reflect)</span><br><span class="line">newInstance:<span class="number">45</span>, DelegatingConstructorAccessorImpl (sun.reflect)</span><br><span class="line">newInstance:<span class="number">423</span>, Constructor (java.lang.reflect)</span><br><span class="line">newInstance:<span class="number">442</span>, Class (java.lang)</span><br><span class="line">getTransletInstance:<span class="number">455</span>, TemplatesImpl (com.sun.org.apache.xalan.internal.xsltc.trax)</span><br><span class="line">newTransformer:<span class="number">486</span>, TemplatesImpl (com.sun.org.apache.xalan.internal.xsltc.trax)</span><br><span class="line">getOutputProperties:<span class="number">507</span>, TemplatesImpl (com.sun.org.apache.xalan.internal.xsltc.trax)</span><br><span class="line">invoke0:-<span class="number">1</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">62</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">43</span>, DelegatingMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">498</span>, Method (java.lang.reflect)</span><br><span class="line">invokeMethod:<span class="number">2128</span>, PropertyUtilsBean (org.apache.commons.beanutils)</span><br><span class="line">getSimpleProperty:<span class="number">1279</span>, PropertyUtilsBean (org.apache.commons.beanutils)</span><br><span class="line">getNestedProperty:<span class="number">809</span>, PropertyUtilsBean (org.apache.commons.beanutils)</span><br><span class="line">getProperty:<span class="number">885</span>, PropertyUtilsBean (org.apache.commons.beanutils)</span><br><span class="line">getProperty:<span class="number">464</span>, PropertyUtils (org.apache.commons.beanutils)</span><br><span class="line">compare:<span class="number">163</span>, BeanComparator (org.apache.commons.beanutils)</span><br><span class="line">siftDownUsingComparator:<span class="number">722</span>, PriorityQueue (java.util)</span><br><span class="line">siftDown:<span class="number">688</span>, PriorityQueue (java.util)</span><br><span class="line">heapify:<span class="number">737</span>, PriorityQueue (java.util)</span><br><span class="line">readObject:<span class="number">797</span>, PriorityQueue (java.util)</span><br><span class="line">invoke0:-<span class="number">1</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">62</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">43</span>, DelegatingMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">498</span>, Method (java.lang.reflect)</span><br><span class="line">invokeReadObject:<span class="number">1170</span>, ObjectStreamClass (java.io)</span><br><span class="line">readSerialData:<span class="number">2178</span>, ObjectInputStream (java.io)</span><br><span class="line">readOrdinaryObject:<span class="number">2069</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject0:<span class="number">1573</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject:<span class="number">431</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject:<span class="number">1409</span>, HashMap (java.util)</span><br><span class="line">invoke0:-<span class="number">1</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">62</span>, NativeMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">43</span>, DelegatingMethodAccessorImpl (sun.reflect)</span><br><span class="line">invoke:<span class="number">498</span>, Method (java.lang.reflect)</span><br><span class="line">invokeReadObject:<span class="number">1170</span>, ObjectStreamClass (java.io)</span><br><span class="line">readSerialData:<span class="number">2178</span>, ObjectInputStream (java.io)</span><br><span class="line">readOrdinaryObject:<span class="number">2069</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject0:<span class="number">1573</span>, ObjectInputStream (java.io)</span><br><span class="line">defaultReadFields:<span class="number">2287</span>, ObjectInputStream (java.io)</span><br><span class="line">readSerialData:<span class="number">2211</span>, ObjectInputStream (java.io)</span><br><span class="line">readOrdinaryObject:<span class="number">2069</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject0:<span class="number">1573</span>, ObjectInputStream (java.io)</span><br><span class="line">readObject:<span class="number">431</span>, ObjectInputStream (java.io)</span><br><span class="line">unmarshalValue:<span class="number">322</span>, UnicastRef (sun.rmi.server)</span><br><span class="line">unmarshalParametersUnchecked:<span class="number">628</span>, UnicastServerRef (sun.rmi.server)</span><br><span class="line">unmarshalParameters:<span class="number">616</span>, UnicastServerRef (sun.rmi.server)</span><br><span class="line">dispatch:<span class="number">338</span>, UnicastServerRef (sun.rmi.server)</span><br><span class="line">run:<span class="number">200</span>, Transport$<span class="number">1</span> (sun.rmi.transport)</span><br><span class="line">run:<span class="number">197</span>, Transport$<span class="number">1</span> (sun.rmi.transport)</span><br><span class="line">doPrivileged:-<span class="number">1</span>, AccessController (java.security)</span><br><span class="line">serviceCall:<span class="number">196</span>, Transport (sun.rmi.transport)</span><br><span class="line">handleMessages:<span class="number">573</span>, TCPTransport (sun.rmi.transport.tcp)</span><br><span class="line">run0:<span class="number">834</span>, TCPTransport$ConnectionHandler (sun.rmi.transport.tcp)</span><br><span class="line">lambda$run$<span class="number">0</span>:<span class="number">688</span>, TCPTransport$ConnectionHandler (sun.rmi.transport.tcp)</span><br><span class="line">run:-<span class="number">1</span>, <span class="number">679859895</span> (sun.rmi.transport.tcp.TCPTransport$ConnectionHandler$$Lambda$<span class="number">14</span>)</span><br><span class="line">doPrivileged:-<span class="number">1</span>, AccessController (java.security)</span><br><span class="line">run:<span class="number">687</span>, TCPTransport$ConnectionHandler (sun.rmi.transport.tcp)</span><br><span class="line">runWorker:<span class="number">1149</span>, ThreadPoolExecutor (java.util.concurrent)</span><br><span class="line">run:<span class="number">624</span>, ThreadPoolExecutor$Worker (java.util.concurrent)</span><br><span class="line">run:<span class="number">748</span>, Thread (java.lang)</span><br></pre></td></tr></table></figure>
+      </div>
+      
+      <footer class="post-footer">
+        <div class="post-tags">
+            <a href="/tags/RMI/">RMI</a>
+            <a href="/tags/CVE-2023-37895/">CVE-2023-37895</a>
+            </div>
+        
+        <nav class="post-nav"><a class="next" href="/2023/03/10/Weblogic%E5%AE%89%E5%85%A8%E6%BC%AB%E8%B0%88%EF%BC%88%E5%9B%9B%EF%BC%89/">
+        <span class="next-text nav-default">Weblogic安全漫谈(四)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:hosch3n@protonmail.com" class="iconfont icon-email" title="email"></a>
+        <a target="_blank" rel="noopener" href="https://github.com/hosch3n" class="iconfont icon-github" title="github"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">&copy;2021 - 2023<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hosch3n</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>
