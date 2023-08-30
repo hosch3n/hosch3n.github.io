@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2023-08-27T11:52:17.117Z</updated>
+  <updated>2023-08-30T08:49:36.077Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="https://hosch3n.github.io/2023/08/27/%E6%9F%90C2%E4%B8%8D%E9%B8%A1%E8%82%8B%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"/>
     <id>https://hosch3n.github.io/2023/08/27/%E6%9F%90C2%E4%B8%8D%E9%B8%A1%E8%82%8B%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/</id>
     <published>2023-08-27T10:18:20.000Z</published>
-    <updated>2023-08-27T11:52:17.117Z</updated>
+    <updated>2023-08-30T08:49:36.077Z</updated>
     
-    <content type="html"><![CDATA[<p>懒散的周日午后，看到4ra1n师傅发了对 <a href="https://mp.weixin.qq.com/s/-Rdkv1WmYrjNWhZZK3pj6w">CVE-2023-21939的分析文章</a>，其中有两点值得关注：</p><ol><li><p>JLabel在原生反序列化流程中，会经由validateObject触发HTML解析</p></li><li><p>反序列化时低版本JDK对htmlDisabled的判断存在Bug</p></li></ol><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[JComponent#readObject -&gt; ObjectInputStream#doCallBacks -&gt; validateObject]</span><br><span class="line"> -&gt; [Swing#JLabel -&gt; Batik#setURI]</span><br></pre></td></tr></table></figure><p>我们可以进一步对接 <a href="https://hosch3n.github.io/2022/05/12/%E6%9F%90C2%E9%B8%A1%E8%82%8B%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">某C2鸡肋漏洞分析</a>中，CS在登录过程中服务端与客户端均存在的反序列化入口，完成漏洞利用的拼图。</p><p><img src="/img/mc2ldfx_k.png"></p><p>不受上一轮CVE-2022-39197&lt;=4.7.1客户端RCE时的Patch影响，存在如下反制路径：</p><ol><li><p>部署RogueCS/RogueMysql/…蜜罐</p></li><li><p>反打代码执行/文件读取，获取红队客户端Shell，获取红队CS服务端密码</p></li><li><p>认证后反序列化代码执行，获取红队CS服务器Shell</p></li></ol>]]></content>
+    <content type="html"><![CDATA[<p>懒散的周日午后，看到4ra1n师傅发了对 <a href="https://mp.weixin.qq.com/s/-Rdkv1WmYrjNWhZZK3pj6w">CVE-2023-21939的分析文章</a>，其中有两点值得关注：</p><ol><li><p>JLabel在原生反序列化流程中，会经由validateObject触发HTML解析</p></li><li><p>反序列化时低版本JDK对htmlDisabled的判断存在Bug</p></li></ol><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[JComponent#readObject -&gt; ObjectInputStream#doCallBacks -&gt; validateObject]</span><br><span class="line"> -&gt; [Swing#JLabel -&gt; Batik#setURI]</span><br></pre></td></tr></table></figure><p>我们可以进一步对接 <a href="https://hosch3n.github.io/2022/05/12/%E6%9F%90C2%E9%B8%A1%E8%82%8B%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">某C2鸡肋漏洞分析</a>中，CS在登录过程中服务端与客户端均存在的反序列化入口，完成漏洞利用的拼图。</p><p><img src="/img/mc2ldfx_k.png"></p><p>不受上一轮CVE-2022-39197&lt;=4.7.1客户端RCE时的Patch影响，存在如下反制路径（JDK小于8u371或17）：</p><ol><li><p>部署RogueCS/RogueMysql/…蜜罐</p></li><li><p>反打代码执行/文件读取，获取红队客户端Shell，获取红队CS服务端密码（客户端已测试4.5/4.7/4.8）</p></li><li><p>认证后反序列化代码执行，获取红队CS服务器Shell（服务端小于4.6）</p></li></ol>]]></content>
     
     
       
