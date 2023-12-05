@@ -6,7 +6,7 @@
   <link href="https://hosch3n.github.io/atom.xml" rel="self"/>
   
   <link href="https://hosch3n.github.io/"/>
-  <updated>2023-12-05T09:02:04.629Z</updated>
+  <updated>2023-12-05T09:15:55.340Z</updated>
   <id>https://hosch3n.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://hosch3n.github.io/2023/12/05/%E8%8E%B7%E5%8F%96%E5%85%89%E7%8C%AB%E7%AE%A1%E7%90%86%E5%91%98%E5%8A%A8%E6%80%81%E5%AF%86%E7%A0%81/"/>
     <id>https://hosch3n.github.io/2023/12/05/%E8%8E%B7%E5%8F%96%E5%85%89%E7%8C%AB%E7%AE%A1%E7%90%86%E5%91%98%E5%8A%A8%E6%80%81%E5%AF%86%E7%A0%81/</id>
     <published>2023-12-05T07:32:16.000Z</published>
-    <updated>2023-12-05T09:02:04.629Z</updated>
+    <updated>2023-12-05T09:15:55.340Z</updated>
     
     <content type="html"><![CDATA[<p>华为、中兴、天邑等厂商的运营商定制化光猫，存在初始化管理员密码。装维人员上门搞完动态业务下发后，密码会变为随机字符和数字，可以通过一些方法获取到管理员动态密码。</p><table><thead><tr><th align="center">运营商</th><th align="center">帐号</th><th align="center">初始密码</th></tr></thead><tbody><tr><td align="center">电信</td><td align="center">telecomadmin</td><td align="center">nE7jA%5m</td></tr><tr><td align="center">移动</td><td align="center">CMCCAdmin</td><td align="center">aDm8H%MdA</td></tr><tr><td align="center">联通</td><td align="center">CUAdmin</td><td align="center">CUAdmin</td></tr></tbody></table><blockquote><p>注意：动态下发状态的管理员后台配置会同步到远程服务器，配乱后无法通过逻辑ID重置设备，因为远程配置也是错的。</p></blockquote><h2 id="电信方案一：小翼管家RPC"><a href="#电信方案一：小翼管家RPC" class="headerlink" title="电信方案一：小翼管家RPC"></a>电信方案一：小翼管家RPC</h2><ol><li><p>下载安装<code>小翼管家App</code>，点击下方<code>智能</code></p></li><li><p>点击右上角<code>+</code>号，添加设备</p></li><li><p>类型选择天翼网关，添加<code>绑定天翼网关及路由器</code></p></li><li><p>按照提示绑定好当前光猫后，进入对应设备的<code>网关设置</code></p></li><li><p>开启网络抓包后，开关<code>指示灯</code></p></li><li><p>编辑URL以<code>nos</code>开头的网关能力子系统HTTP请求包</p></li><li><p>修改HTTP请求包体为如下JSON</p></li></ol><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;Params&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="attr">&quot;MethodName&quot;</span><span class="punctuation">:</span><span class="string">&quot;GetTAPasswd&quot;</span><span class="punctuation">,</span><span class="attr">&quot;RPCMethod&quot;</span><span class="punctuation">:</span><span class="string">&quot;CallMethod&quot;</span><span class="punctuation">,</span><span class="attr">&quot;ObjectPath&quot;</span><span class="punctuation">:</span><span class="string">&quot;/com/ctc/igd1/Telecom/System&quot;</span><span class="punctuation">,</span><span class="attr">&quot;InterfaceName&quot;</span><span class="punctuation">:</span><span class="string">&quot;com.ctc.igd1.SysCmd&quot;</span><span class="punctuation">,</span><span class="attr">&quot;ServiceName&quot;</span><span class="punctuation">:</span><span class="string">&quot;com.ctc.igd1&quot;</span><span class="punctuation">&#125;</span> </span><br></pre></td></tr></table></figure><ol start="8"><li>查看HTTP响应包体中的管理员动态密码</li></ol><h2 id="电信方案二：备份文件提权"><a href="#电信方案二：备份文件提权" class="headerlink" title="电信方案二：备份文件提权"></a>电信方案二：备份文件提权</h2><ol><li><p>通过光猫机身背后useradmin密码，进入<a href="http://192.168.1.1:8080/">普通用户装维后台</a></p></li><li><p>进入<code>管理</code>-&gt;<code>设备管理</code>界面，F12打开控制台搜索<code>session</code></p></li><li><p>找到形如<code>set3_sessionKey_666</code>的sessionKey，拼接到如下URL尾部并访问</p></li></ol><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.1.1:8080/usbbackup.cmd?action=backupeble&amp;set3_sessionKey=set3_sessionKey_666</span><br></pre></td></tr></table></figure><ol start="4"><li><p>禁用<code>快速恢复</code>，插入U盘<code>备份配置</code></p></li><li><p><a href="http://www.nirsoft.net/toolsdownload/routerpassview.zip">下载routerpassview</a>，搜索查看e8_Config_Backup/xxx.cfg中的管理员动态密码</p></li></ol><h2 id="电信方案三：telnet终端命令"><a href="#电信方案三：telnet终端命令" class="headerlink" title="电信方案三：telnet终端命令"></a>电信方案三：telnet终端命令</h2><p>前三步与方案二基本相同，但是改为如下配置telnet与ftp的URL</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.1.1:8080/telandftpcfg.cmd?action=add&amp;telusername=admin&amp;telpwd=admin&amp;telport=23&amp;telenable=1&amp;ftpusername=useradmin&amp;ftppwd=ftpadmin&amp;ftpport=21&amp;ftpenable=1&amp;set3_sessionKey=set3_sessionKey_666</span><br></pre></td></tr></table></figure><p>访问后便会开启telnet，终端连接后输入<code>su</code>命令和对应密码，最后通过<code>telecomadmin get</code>命令获取理员动态密码。</p><blockquote><p>su提权的密码根据光猫厂商、批次不同，基于<code>设备标识号</code>的算法规则也不同。</p></blockquote><h2 id="其它运营商"><a href="#其它运营商" class="headerlink" title="其它运营商"></a>其它运营商</h2><p>暂时没有需求，以后弄了再补档更新</p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://www.right.com.cn/forum/thread-5128686-1-1.html">2021年7月后出厂电信天邑TEWA-750/708/768/800/1000等超级密码破解方法及工具</a></p><p><a href="https://post.smzdm.com/p/ag8lgqn3/">获取电信天邑TEWA-768G/TEWA-708E/tewa-1000e光猫超级密码</a></p>]]></content>
     
@@ -38,6 +38,12 @@
     
     
     
+    <category term="Web安全" scheme="https://hosch3n.github.io/categories/Web%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="modem" scheme="https://hosch3n.github.io/tags/modem/"/>
+    
+    <category term="telecom" scheme="https://hosch3n.github.io/tags/telecom/"/>
     
   </entry>
   
