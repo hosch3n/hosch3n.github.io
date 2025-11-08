@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <!-- Website mata -->
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<!-- Disable transformation -->
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<!-- Website description -->
+
+<meta name="description" content="Steam应用分发机制与解密方法" />
+
+
+<!-- Website keywords -->
+
+<meta name="keywords" content="cyber,security,research,vulnerability,analyze" />
+
+
+
+
+<!-- Website rss -->
+
+<link rel="alternate" href="/default" title="hosch3n" >
+
+
+<!-- Website favicon -->
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3.0.0" />
+
+
+<!-- Canonical, good for google search engine -->
+<link rel="canonical" href="https://hosch3n.github.io/2025/11/09/Steam应用分发机制与解密方法/" />
+
+<!-- Fancybox styling -->
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+<!-- MathJax (LaTeX) support -->
+
+
+<!-- Theme styling -->
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=3.0.0" />
+
+<!-- Analytics and push -->
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-445KCMY5EW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+
+  gtag('config', 'G-445KCMY5EW');
+</script>
+
+  
+
+
+
+<!-- LeanCloud Counter -->
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null,"server_url":null,"cdn":null},"toc":true,"fancybox":true,"latex":false};
+</script>
+  
+  <title>Steam应用分发机制与解密方法 - hosch3n</title>
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div class="scrollPercentage"></div>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">hosch3n</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+    <a href="/">
+      <li class="mobile-menu-item">
+        
+        
+        Home              </li>
+    </a>
+    
+    <a href="/tags/">
+      <li class="mobile-menu-item">
+        
+        
+        Tags              </li>
+    </a>
+    
+    <a href="/categories/">
+      <li class="mobile-menu-item">
+        
+        
+        Categories              </li>
+    </a>
+    
+    <a href="/about/">
+      <li class="mobile-menu-item">
+        
+        
+        About              </li>
+    </a>
+    
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+      <div class="logo-wrapper">  
+  <a href="/." class="logo">hosch3n</a>  
+</div>  
+  
+<nav class="site-navbar">  
+    
+    <ul id="menu" class="menu">  
+        
+        <li class="menu-item">  
+          <a class="menu-item-link" href="/">  
+              
+              
+              Home  
+              
+          </a>  
+        </li>  
+        
+        <li class="menu-item">  
+          <a class="menu-item-link" href="/tags/">  
+              
+              
+              Tags  
+              
+          </a>  
+        </li>  
+        
+        <li class="menu-item">  
+          <a class="menu-item-link" href="/categories/">  
+              
+              
+              Categories  
+              
+          </a>  
+        </li>  
+        
+        <li class="menu-item">  
+          <a class="menu-item-link" href="/about/">  
+              
+              
+              About  
+              
+          </a>  
+        </li>  
+        
+    </ul>  
+    
+</nav>  
+
+    </header>
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+  <header class="post-header">
+    <h1 class="post-title">
+      
+      Steam应用分发机制与解密方法
+      
+    </h1>
+
+    <div class="post-meta">
+      <span class="post-time">
+        2025-11-09
+      </span>
+      
+      
+      <span class="post-category">
+        
+        <a href="/categories/Reverse/">Reverse</a>
+        
+      </span>
+      
+      
+    </div>
+  </header>
+
+  
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Steam%E5%BA%94%E7%94%A8%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">Steam应用分发机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#App-ID"><span class="toc-number">1.1.</span> <span class="toc-text">App ID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DLC-ID"><span class="toc-number">1.2.</span> <span class="toc-text">DLC ID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Depot-ID"><span class="toc-number">1.3.</span> <span class="toc-text">Depot ID</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E5%AF%86%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">解密方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A6%BB%E7%BA%BF%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">离线模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Goldberg-Steam-Emulator"><span class="toc-number">2.2.</span> <span class="toc-text">Goldberg Steam Emulator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SteamTools"><span class="toc-number">2.3.</span> <span class="toc-text">SteamTools</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Denuvo-DRM"><span class="toc-number">3.</span> <span class="toc-text">Denuvo DRM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A6%BB%E7%BA%BF%E6%A8%A1%E5%BC%8F-1"><span class="toc-number">3.1.</span> <span class="toc-text">离线模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E7%BB%95%E8%BF%87"><span class="toc-number">3.2.</span> <span class="toc-text">动态绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E7%BB%95%E8%BF%87"><span class="toc-number">3.3.</span> <span class="toc-text">静态绕过</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+  </div>
+  
+
+  <div class="post-content">
+    
+    <h1 id="Steam应用分发机制"><a href="#Steam应用分发机制" class="headerlink" title="Steam应用分发机制"></a>Steam应用分发机制</h1><p>Steam是Valve公司的一个软件发行平台，分发的每个产品都是一个Steam应用（Application）。Application可以是游戏、软件、可下载内容（DLC）、音视频等产品类型，每个Application有唯一的<code>App ID</code>。App每个版本有唯一的<code>Build ID</code>，正式版本的build会发布到默认分支（branch）。</p>
+<p>将每个文件大小、SHA1哈希等信息记录在元数据清单文件中（<code>Manifests</code>），文件分组为不同<code>Depot</code>并分配唯一的<code>Depot ID</code>。Depot可以是语言包（localized）、add-on、DLC等类型的程序或资源集，根据地区语言、操作系统及架构、DLC等因素决定加载条件和顺序。</p>
+<p>一个或多个Application、Depot组成了用于售卖的<code>Packages</code>单元，可以将多个Package捆绑为<code>Bundles</code>包打折售卖。Package的一个常见场景是用于区分面向不同地区发售的版本和定价。</p>
+<h2 id="App-ID"><a href="#App-ID" class="headerlink" title="App ID"></a>App ID</h2><p>App ID可以通过Steam官网的URL识别、通过客户端游戏属性获取，也可以通过steamdb.info等第三方网站查询。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ID：3167020 </span></span><br><span class="line">https://store.steampowered.com/app/3167020/Escape_From_Duckov/</span><br><span class="line">https://steamdb.info/app/3167020/</span><br></pre></td></tr></table></figure>
+
+<h2 id="DLC-ID"><a href="#DLC-ID" class="headerlink" title="DLC ID"></a>DLC ID</h2><p>DLC分为跟随主体的<code>Depots</code>和与主体关联但独立分组的<code>Depots</code>两类，可以通过Steam官网或客户端关联搜索，也可以在steamdb.info的Depots、Related Apps中查询。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># DLCs</span></span><br><span class="line">https://steamdb.info/app/2807960/dlc/</span><br><span class="line"><span class="comment"># Related Apps</span></span><br><span class="line">https://steamdb.info/app/2807960/linked/</span><br></pre></td></tr></table></figure>
+
+<h2 id="Depot-ID"><a href="#Depot-ID" class="headerlink" title="Depot ID"></a>Depot ID</h2><p>主体或DLC可能存在多个Depot，用于区分不同操作系统、语言包的程序和资源文件组。每个Depot中会存在一个或多个文件清单（Manifests），App已安装的Depot和相应manifest信息记录在<code>Steam\steamapps\appmanifest_&#123;App ID&#125;.acf</code>，清单文件具有唯一的<code>Manifest ID</code>，使用<code>&#123;Depot ID&#125;_&#123;Manifest ID&#125;.manifest</code>的文件名格式。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Steam Console (Steam.exe -console / Steam://nav/console)</span></span><br><span class="line">app_info_print 3167020</span><br><span class="line"><span class="comment"># steamdb</span></span><br><span class="line">https://steamdb.info/depot/3167021/manifests/</span><br><span class="line"></span><br><span class="line"><span class="comment"># appmanifest_3167020.acf</span></span><br><span class="line">3167021_2300087279900170974.manifest</span><br></pre></td></tr></table></figure>
+
+<p>向Steam提供manifest清单及Depot相应的<code>DecryptionKey</code>即可获取Depot中的各个具体的程序和资源文件，DecryptionKey被记录在<code>Steam\config\config.vdf #InstallConfigStore/Software/Valve/Steam/depots</code>字段中。</p>
+<h1 id="解密方法"><a href="#解密方法" class="headerlink" title="解密方法"></a>解密方法</h1><h2 id="离线模式"><a href="#离线模式" class="headerlink" title="离线模式"></a>离线模式</h2><p>为了让不需要联网的应用在断网时能正常运行，Steam支持以离线模式启动。所以获取整套Application-Depots-Manifests-DecryptionKey 最直观的方式就是使用共享账号&#x2F;出租账号登录下载应用，下载后持续以离线模式运行。</p>
+<p>优点是不需要理解任何分发机制细节，完全是Steam客户端的正常下载使用逻辑。但应用分散在多个账号时需要切号使用，且在下一次在线登录前无法更新。</p>
+<h2 id="Goldberg-Steam-Emulator"><a href="#Goldberg-Steam-Emulator" class="headerlink" title="Goldberg Steam Emulator"></a>Goldberg Steam Emulator</h2><p>其它账号安装后的应用，离线模式也无法在未购买的账号中运行，是因为Steam客户端会检查账号最后一次在线登录时的记录，判断是否具备使用权限。如果能不再通过Steam官方客户端，而是直接启动应用则绕过了这一层权限判断。</p>
+<p>一般应用为了和Steam联动游戏成就、创意工坊（Mod）、云存档等功能，会引入<code>steam_api64.dll</code>链接库文件。当其没有添加额外的检查&#x2F;保护时，使用<a target="_blank" rel="noopener" href="https://gitlab.com/Mr_Goldberg/goldberg_emulator">Goldberg Steam Emulator</a>替换<code>steam_api64.dll</code>，便可劫持替换原有的Steam官方客户端，绕过Steam DRM逻辑，解决一部分应用的启动问题，</p>
+<blockquote>
+<p><code>Goldberg Steam Emulator</code>可以进一步配置局域网联机，此处不再展开。</p>
+</blockquote>
+<h2 id="SteamTools"><a href="#SteamTools" class="headerlink" title="SteamTools"></a>SteamTools</h2><p>使用<code>Goldberg Steam Emulator</code>会完全脱离Steam官方客户端，当遇到存在复杂校验逻辑的应用时无法绕过，且无法使用Steam成就、云存档。为了仅劫持Steam官方客户端中关于所有权校验的部分，需要<a target="_blank" rel="noopener" href="https://www.steamtools.net/download.html">安装SteamTools</a>，根据GUI引导拖入包含App ID的字符串&#x2F;链接&#x2F;文件解锁特定应用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># SteamTools注入文件</span></span><br><span class="line">Steam\hid.dll  </span><br><span class="line">Steam\config\stplug-in  </span><br><span class="line">Steam\config\stUI   </span><br><span class="line">Steam\config\appdata.vdf  </span><br><span class="line">Steam\config\appdataX.vdf  </span><br></pre></td></tr></table></figure>
+
+<p>离线模式下载后解锁还是依赖先登录共享账号，而将各个账号的整套Application-Depots-Manifests-DecryptionKey收集起来，便可实现比账号更细粒度的资源分发。进一步将下载并加入Steam数据库的动作lua脚本化，便是基于SteamTools实现的一键拖放清单入库。</p>
+<h1 id="Denuvo-DRM"><a href="#Denuvo-DRM" class="headerlink" title="Denuvo DRM"></a>Denuvo DRM</h1><p>Denuvo DRM就是俗称的D加密，上文中的Goldberg Steam Emulator和SteamTools可以绕过Steam DRM检查，于是Denuvo等第三方DRM应需而生，提供用于保护Steam DRM的反破解能力。可在<a target="_blank" rel="noopener" href="https://store.steampowered.com/curator/26095454-Denuvo-Games/">Denuvo Watch</a>查看采用该保护方案的游戏。</p>
+<p>Denuvo会在应用初次启动时收集硬件、驱动和操作系统的关键信息，经过暂不明确的算法处理后与Steam的账号及应用元数据组合生成一个xml，并将base64编码后的xml发送至服务器，服务器会根据上传信息生成与运行环境和账号应用配套的<code>Token</code>下发（通常限制每天仅可生成五次），下发后的Token存储在<code>Steam\userdata\&#123;Friend Code&#125;\&#123;App ID&#125;\&#123;Token ID&#125;</code>文件中。</p>
+<p>应用再次启动时若检测Token文件未因运行环境或游戏版本更新而失效，则应用在运行过程中会利用Token和运行环境信息，解密出程序正常运行所需的指令地址。否则校验不通过或错误指令地址会导致程序退出或崩溃。该过程涉及对<code>KUSER_SHARED_DATA</code>、<code>CPUID</code>、<code>PEB</code>信息的采集和对<code>ntdll</code>、<code>SYSCALL</code>的调用，以及对程序的CRC校验和虚拟机指令运算。参见<a target="_blank" rel="noopener" href="https://connorjaydunn.github.io/blog/posts/denuvo-analysis/">Denuvo Analysis</a>。</p>
+<h2 id="离线模式-1"><a href="#离线模式-1" class="headerlink" title="离线模式"></a>离线模式</h2><p>与Steam账号的离线模式逻辑相同，可以使用共享账号&#x2F;出租账号初次联网生成Token后保持离线运行，完全遵循正常验证逻辑。同样存在多账号切换不便、无法更新的问题，其中多账号切换问题可利用Goldberg Steam Emulator的<code>steamclient_loader</code>或SteamTools授权功能，向受Denuvo保护的程序提供原账号ID解决，只是一种对离线功能的优化算不上真正意义的绕过。</p>
+<h2 id="动态绕过"><a href="#动态绕过" class="headerlink" title="动态绕过"></a>动态绕过</h2><p>Denuvo实现的保护最终是让程序在有限的运行环境中使用（比如限制了每天生成五次Token），如果能劫持向程序提供的运行环境信息，使其在多个不同运行环境中都误以为是同一个固定的运行环境，则可打破对次数的限制，当然这种动态劫持也可以补丁的方式固化。参见<a target="_blank" rel="noopener" href="https://momo5502.com/slides/denuvo/">Reverse Engineering Denuvo in Hogwarts Legacy</a>。</p>
+<h2 id="静态绕过"><a href="#静态绕过" class="headerlink" title="静态绕过"></a>静态绕过</h2><p>动态绕过仍依赖于一个有效的原始Token，当完全移除或补丁绕过了程序中的各处Denuvo校验逻辑时便是真正意义上的破解。国内外均有比较知名的案例和ID（如3DM、Empress），非本文重点不再继续展开了。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><p><a target="_blank" rel="noopener" href="https://partner.steamgames.com/doc/store/application">Steamworks Documentation &gt; Store Presence &gt; Applications</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://gitlab.com/Mr_Goldberg/goldberg_emulator">Goldberg Steam Emulator</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/SteamAutoCracks/ManifestHub">ManifestHub</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://partner.steamgames.com/doc/features/drm">Steamworks Documentation &gt; Features &gt; Steam DRM</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://store.steampowered.com/curator/26095454-Denuvo-Games/">Denuvo Watch</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://connorjaydunn.github.io/blog/posts/denuvo-analysis/">Denuvo Analysis</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://momo5502.com/slides/denuvo/">Reverse Engineering Denuvo in Hogwarts Legacy</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Denuvo">Denuvo</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Empress_(cracker)">Empress (cracker)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/atom0s/Steamless/">Steamless</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://anadius.su/origin-unwrapper">Origin Unwrapper</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-2068276-1-1.html">请勿轻信低价骗局！Steam假入库灰产陷阱手法剖析</a></p>
+</li>
+</ol>
+
+    
+  </div>
+
+  
+  <!-- Post Copyright -->
+
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span>Author: </span>
+    <a href="https://hosch3n.github.io">hosch3n</a>
+  </p>
+  <p class="copyright-item">
+    <span>Link: </span>
+    <a href="https://hosch3n.github.io/2025/11/09/Steam%E5%BA%94%E7%94%A8%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6%E4%B8%8E%E8%A7%A3%E5%AF%86%E6%96%B9%E6%B3%95/">https://hosch3n.github.io/2025/11/09/Steam%E5%BA%94%E7%94%A8%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6%E4%B8%8E%E8%A7%A3%E5%AF%86%E6%96%B9%E6%B3%95/</a>
+  </p>
+  <p class="copyright-item">
+    <span>License: </span>
+    
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+  </p>
+</div>
+
+    
+
+  
+
+  
+  <footer class="post-footer">
+    
+      
+  <nav class="post-nav">  
+      
+      
+      <a class="next" href="/2024/12/31/2024/">  
+        <span class="next-text nav-default">2024</span>  
+        <span class="prev-text nav-mobile">Next</span>  
+        <i class="iconfont icon-right"></i>  
+      </a>  
+      
+  </nav>  
+  
+
+  </footer>
+  
+
+</article>
+        </div>
+          
+  <div class="comments" id="comments">  
+      
+  </div>  
+  
+
+      </div>
+    </main>
+    <footer id="footer" class="footer">
+      <!-- Social Links -->
+
+<div class="social-links">
+  
+  
+  
+  
+  <a href="mailto:hosch3n@protonmail.com" class="iconfont icon-email" title="email"></a>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <a target="_blank" rel="noopener" href="https://github.com/hosch3n" class="iconfont icon-github" title="github"></a>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+  
+</div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme -
+    <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/zeed-w-beez/hexo-theme-even">Even</a>
+  </span>
+  <span class="division">|</span>
+  <span class="hosting-info">
+    Github Pages
+  </span>
+
+  <span class="copyright-year">
+    <span>
+      
+      &copy;
+      
+      1970 - 2025      
+    </span>
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+
+    <span class="author">hosch3n</span>
+  </span>
+
+</div>
+    </footer>
+    <div class="back-to-top" id="back-to-top"> <i class="iconfont icon-up"></i> </div>
+  </div>
+    
+    
+    
+    
+    
+    
+    
+  
+
+  
+
+
+
+
+
+
+
+<script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+
+
+
+<script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+
+
+
+<script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/even.js?v=3.0.0"></script>
+</body>
+
+</html>
